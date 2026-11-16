@@ -1,0 +1,95 @@
+{
+  "app": {
+    "name": "Nabd",
+    "tagline": "Train smarter. Track your progress."
+  },
+  "common": {
+    "next": "Next",
+    "start": "Get started",
+    "skip": "Skip",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "comingSoon": "Coming soon",
+    "demoBadge": "Demo by KHENOV",
+    "demoBadgeLabel": "This app is a demo by KHENOV and all of its data is fictional"
+  },
+  "onboarding": {
+    "pageOf": "Slide {{current}} of {{total}}",
+    "slide1": {
+      "title": "Book your class in seconds",
+      "body": "A clear weekly schedule, one-tap booking and a waitlist when a class is full."
+    },
+    "slide2": {
+      "title": "Log every exercise, every set",
+      "body": "Start a session, log weights and reps, and let the rest timer do the counting."
+    },
+    "slide3": {
+      "title": "Watch your progress climb",
+      "body": "Personal records, charts for your weight and measurements, and a streak that keeps you going."
+    }
+  },
+  "login": {
+    "title": "Welcome to Nabd",
+    "subtitle": "Try the complete member journey: booking, training, progress and membership.",
+    "cta": "Continue as demo member",
+    "ctaLoading": "Preparing your demo account",
+    "note": "No real sign-in. All data is fictional and stays on your device."
+  },
+  "tabs": {
+    "home": "Home",
+    "classes": "Classes",
+    "workout": "Workout",
+    "progress": "Progress",
+    "profile": "Profile"
+  },
+  "home": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "streakTitle": "Training streak",
+    "streakDays_one": "{{countText}} day in a row",
+    "streakDays_other": "{{countText}} days in a row",
+    "streakHint": "Keep it going with a workout or class today",
+    "pendingTitle": "Today's plan and next class",
+    "pendingBody": "Your workout plan, your booked class and quick actions will appear here."
+  },
+  "pending": {
+    "classes": {
+      "title": "This week's classes",
+      "body": "The class schedule with filters, booking and waitlist will appear here."
+    },
+    "workout": {
+      "title": "Workout session",
+      "body": "Pick a plan and start a session, logging each set with a rest timer."
+    },
+    "progress": {
+      "title": "Your progress",
+      "body": "Charts for your weight, measurements and personal records in one place."
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "memberSince": "Member since {{date}}",
+    "preferences": "Preferences",
+    "language": "Language",
+    "languageAr": "العربية",
+    "languageEn": "English",
+    "theme": "Appearance",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "demoSection": "Demo",
+    "demoNote": "All data in this app is fictional and stays on your device.",
+    "reset": "Reset demo",
+    "resetHint": "Clears your demo data and takes you back to the start",
+    "resetConfirmTitle": "Reset the demo?",
+    "resetConfirmBody": "The bookings, workouts and measurements you added will be erased and you will return to the start screen.",
+    "resetConfirm": "Yes, reset",
+    "resetting": "Resetting"
+  },
+  "error": {
+    "title": "Couldn't load",
+    "body": "Something went wrong while loading your data. Check your connection and try again."
+  }
+}
