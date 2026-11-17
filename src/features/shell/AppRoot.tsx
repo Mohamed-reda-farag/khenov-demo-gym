@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { Platform, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { ToastProvider } from '@/components/ui/Toast';
 import { useDirection } from '@/i18n/direction';
 import { useLanguage } from '@/i18n';
 import { ThemeProvider, useTheme } from '@/theme';
@@ -40,13 +41,17 @@ function AppShell() {
         {...(Platform.OS === 'web' ? { dir } : {})}
       >
         <StatusBar style={mode === 'dark' ? 'light' : 'dark'} />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            animation: 'fade',
-            contentStyle: { backgroundColor: colors.background },
-          }}
-        />
+        <ToastProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              animation: 'fade',
+              contentStyle: { backgroundColor: colors.background },
+            }}
+          >
+            <Stack.Screen name="class/[sessionId]" options={{ animation: 'slide_from_bottom' }} />
+          </Stack>
+        </ToastProvider>
       </View>
     </LocaleProvider>
   );

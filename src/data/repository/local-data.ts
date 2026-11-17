@@ -1,5 +1,4 @@
 import type {
-  ClassRepository,
   ExerciseRepository,
   MemberRepository,
   MembershipRepository,
@@ -17,16 +16,20 @@ export const localTrainerRepository: TrainerRepository = {
   list: () => readCollection('trainers'),
 };
 
-export const localClassRepository: ClassRepository = {
-  list: () => readCollection('classes'),
-};
-
 export const localExerciseRepository: ExerciseRepository = {
   list: () => readCollection('exercises'),
 };
 
 export const localWorkoutPlanRepository: WorkoutPlanRepository = {
   list: () => readCollection('workoutPlans'),
+  async getForToday(now = new Date()) {
+    const [schedule, plans] = await Promise.all([
+      readCollection('workoutSchedule'),
+      readCollection('workoutPlans'),
+    ]);
+    const entry = schedule.find((e) => e.dayOfWeek === now.getDay());
+    return plans.find((p) => p.id === entry?.planId) ?? null;
+  },
 };
 
 export const localMembershipRepository: MembershipRepository = {

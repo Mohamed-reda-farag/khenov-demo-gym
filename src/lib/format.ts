@@ -48,6 +48,68 @@ export function formatClock(time24: string, language: Language): string {
   return `${language === 'ar' ? toArabicDigits(text) : text} ${suffix}`;
 }
 
+const WEEKDAYS: Record<Language, { long: string[]; short: string[] }> = {
+  ar: {
+    long: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+    short: ['أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت'],
+  },
+  en: {
+    long: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    short: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  },
+};
+
+const MONTHS: Record<Language, string[]> = {
+  ar: [
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
+  ],
+  en: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ],
+};
+
+/** Weekday and month names are fixed tables, so they never depend on device Intl data. */
+export function formatWeekday(date: Date, language: Language, style: 'long' | 'short'): string {
+  return WEEKDAYS[language][style][date.getDay()] ?? '';
+}
+
+export function formatDayMonth(date: Date, language: Language): string {
+  const day = formatNumber(date.getDate(), language);
+  return `${day} ${MONTHS[language][date.getMonth()] ?? ''}`;
+}
+
+export function formatTimeOfDay(date: Date, language: Language): string {
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  return formatClock(`${hh}:${mm}`, language);
+}
+
+export function formatTimeRange(startIso: string, endIso: string, language: Language): string {
+  return `${formatTimeOfDay(new Date(startIso), language)} – ${formatTimeOfDay(new Date(endIso), language)}`;
+}
+
 export function useFormat() {
   const language = useLanguage();
   return useMemo(
@@ -58,6 +120,11 @@ export function useFormat() {
       date: (iso: string, options?: Intl.DateTimeFormatOptions) =>
         formatDate(iso, language, options),
       clock: (time24: string) => formatClock(time24, language),
+      weekday: (date: Date, style: 'long' | 'short' = 'long') =>
+        formatWeekday(date, language, style),
+      dayMonth: (date: Date) => formatDayMonth(date, language),
+      time: (iso: string) => formatTimeOfDay(new Date(iso), language),
+      timeRange: (startIso: string, endIso: string) => formatTimeRange(startIso, endIso, language),
     }),
     [language],
   );

@@ -11,7 +11,10 @@
     "retry": "Try again",
     "comingSoon": "Coming soon",
     "demoBadge": "Demo by KHENOV",
-    "demoBadgeLabel": "This app is a demo by KHENOV and all of its data is fictional"
+    "demoBadgeLabel": "This app is a demo by KHENOV and all of its data is fictional",
+    "close": "Close",
+    "done": "Done",
+    "details": "Details"
   },
   "onboarding": {
     "pageOf": "Slide {{current}} of {{total}}",
@@ -52,8 +55,32 @@
     "streakDays_one": "{{countText}} day in a row",
     "streakDays_other": "{{countText}} days in a row",
     "streakHint": "Keep it going with a workout or class today",
-    "pendingTitle": "Today's plan and next class",
-    "pendingBody": "Your workout plan, your booked class and quick actions will appear here."
+    "today": {
+      "title": "Today's plan",
+      "start": "Start workout",
+      "meta": "{{exercises}} · {{minutes}}",
+      "restTitle": "Rest day",
+      "restBody": "Recovery is part of progress. Take it easy today or book a light class.",
+      "restCta": "Browse classes"
+    },
+    "next": {
+      "title": "Next class",
+      "today": "Today {{time}}",
+      "tomorrow": "Tomorrow {{time}}",
+      "day": "{{weekday}} {{time}}",
+      "with": "with {{name}} · {{room}}",
+      "cancel": "Cancel booking",
+      "emptyTitle": "No upcoming classes",
+      "emptyBody": "Book your first class and start an active week.",
+      "emptyCta": "Book a class"
+    },
+    "quick": {
+      "title": "Quick actions",
+      "bookClass": "Book a class",
+      "startWorkout": "Start a workout",
+      "checkIn": "Check-in pass",
+      "soon": "Soon"
+    }
   },
   "pending": {
     "classes": {
@@ -91,5 +118,152 @@
   "error": {
     "title": "Couldn't load",
     "body": "Something went wrong while loading your data. Check your connection and try again."
+  },
+  "units": {
+    "minutes_one": "{{countText}} min",
+    "minutes_other": "{{countText}} min",
+    "exercises_one": "{{countText}} exercise",
+    "exercises_other": "{{countText}} exercises",
+    "spotsLeft_one": "{{countText}} spot left",
+    "spotsLeft_other": "{{countText}} spots left",
+    "members_one": "{{countText}} member",
+    "members_other": "{{countText}} members",
+    "classes_one": "{{countText}} class",
+    "classes_other": "{{countText}} classes",
+    "years_one": "{{countText}} year",
+    "years_other": "{{countText}} years",
+    "filters_one": "{{countText}} filter",
+    "filters_other": "{{countText}} filters"
+  },
+  "classes": {
+    "title": "Classes",
+    "subtitle": "Book your spot in this week's classes",
+    "filters": {
+      "open": "Filter",
+      "title": "Filter classes",
+      "type": "Class type",
+      "trainer": "Trainer",
+      "time": "Time of day",
+      "apply": "Show classes",
+      "clearAll": "Clear all",
+      "removeChip": "Remove filter: {{label}}",
+      "active": "Active filters"
+    },
+    "category": {
+      "strength": "Strength",
+      "cardio": "Cardio",
+      "hiit": "HIIT",
+      "mind_body": "Mind and body"
+    },
+    "timeOfDay": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    },
+    "level": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "slot": {
+      "open": "Open",
+      "full": "Full",
+      "booked": "Booked",
+      "waitlisted": "Waitlisted",
+      "ended": "Ended"
+    },
+    "week": {
+      "previous": "Show previous week",
+      "next": "Show next week",
+      "range": "{{from}} – {{to}}"
+    },
+    "day": {
+      "today": "Today",
+      "hasBooking": "You have a booking",
+      "selected": "Selected",
+      "past": "Past day"
+    },
+    "row": {
+      "with": "with {{name}}",
+      "waitlist": "Waitlist: {{countText}}",
+      "position": "Your waitlist spot: {{positionText}}",
+      "open": "Open class details"
+    },
+    "empty": {
+      "dayTitle": "No classes on this day",
+      "dayBody": "Pick another day of the week.",
+      "filteredTitle": "No matching classes",
+      "filteredBody": "Try changing the filters or picking another day.",
+      "clearFilters": "Clear filters"
+    }
+  },
+  "details": {
+    "title": "Class details",
+    "about": "About this class",
+    "trainer": "Trainer",
+    "when": "When",
+    "duration": "Duration",
+    "room": "Room",
+    "level": "Level",
+    "capacity": "Capacity",
+    "capacityValue": "{{bookedText}} of {{capacityText}} booked",
+    "onList": "Registered",
+    "waiting": "On the waitlist",
+    "requirements": "What to bring",
+    "yearsExperience": "{{years}} of experience",
+    "action": {
+      "book": "Book your spot",
+      "joinWaitlist": "Join the waitlist",
+      "cancel": "Cancel booking",
+      "leaveWaitlist": "Leave the waitlist",
+      "ended": "This class has ended"
+    },
+    "note": {
+      "booked": "Your spot is booked. You can cancel up to two hours before the class starts.",
+      "bookedLocked": "Your spot is booked. The cancellation window closed two hours before the class.",
+      "full": "This class is full. Join the waitlist and we will confirm the first spot that opens.",
+      "waitlisted": "You are on the waitlist. When a spot opens your booking is confirmed automatically and we will let you know.",
+      "open": "Booking is included in your membership.",
+      "ended": "Pick an upcoming class from the schedule."
+    },
+    "notFound": {
+      "title": "We couldn't find this class",
+      "body": "It may no longer be listed. Browse the schedule and pick another time.",
+      "cta": "Go to the schedule"
+    }
+  },
+  "success": {
+    "title": "Your booking is confirmed",
+    "body": "See you in class! Here is your booking summary.",
+    "when": "When",
+    "trainer": "Trainer",
+    "room": "Room",
+    "done": "Done",
+    "undo": "Undo booking"
+  },
+  "toast": {
+    "cancelled": "Your booking for {{name}} was cancelled",
+    "undo": "Undo",
+    "undone": "Undone",
+    "bookingUndone": "Booking cancelled",
+    "waitlistJoined": "You are on the waitlist. Your spot is {{positionText}}",
+    "waitlistLeft": "You left the waitlist",
+    "promoted": "A spot opened up! You're confirmed for {{name}}"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "booking": {
+      "not_found": "We couldn't find this class.",
+      "in_past": "This class has already started or ended.",
+      "already_booked": "You are already booked into this class.",
+      "already_waitlisted": "You are already on the waitlist.",
+      "class_full": "This class is full. You can join the waitlist.",
+      "class_not_full": "There are spots available. You can book directly.",
+      "overlap": "You have another booking that clashes with this class.",
+      "not_booked": "There is no booking to cancel.",
+      "not_waitlisted": "You are not on the waitlist.",
+      "cutoff_passed": "Bookings can't be cancelled less than two hours before the class.",
+      "undo_unavailable": "The undo time has passed."
+    }
   }
 }

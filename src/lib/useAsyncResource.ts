@@ -6,7 +6,10 @@ export type ResourceState<T> =
 /** Loads data on mount and exposes `reload` for retry. Ignores results after unmount. */
 export function useAsyncResource<T>(load: () => Promise<T>): {
   state: ResourceState<T>;
+  /** Shows the loading state again, then fetches. Use for explicit retry. */
   reload: () => void;
+  /** Fetches again without flashing the loading state. Use for background updates. */
+  refresh: () => void;
 } {
   const [state, setState] = useState<ResourceState<T>>({ status: 'loading' });
   const [attempt, setAttempt] = useState(0);
@@ -40,5 +43,6 @@ export function useAsyncResource<T>(load: () => Promise<T>): {
     setState({ status: 'loading' });
     setAttempt((n) => n + 1);
   }, []);
-  return { state, reload };
+  const refresh = useCallback(() => setAttempt((n) => n + 1), []);
+  return { state, reload, refresh };
 }

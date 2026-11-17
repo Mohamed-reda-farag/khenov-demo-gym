@@ -30,6 +30,12 @@ Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 
 ## Decisions
 
+- Classes are weekly templates; sessions are generated for a rolling window (the current Saturday-based week plus the next one), so the demo works on any day. Only the member's bookings and small seat adjustments are stored.
+- Seed version is 2 (the class data model changed), so old local data is purged and reseeded automatically.
+- The day selector shows one week of seven days in a fixed row with previous/next week buttons, instead of a horizontal scroll list, so there is no scroll offset to mirror in RTL. Cells are about 45dp wide on a 360dp phone.
+- Undo of a cancellation restores seat counts exactly (the repository keeps the previous state for 15 seconds), so a waitlist promotion caused by the cancel is reverted too.
+- Vitest instead of Jest: the rules are pure TypeScript, so no React Native transform is needed. It is the only new dependency (dev only).
+
 - Accent is signal yellow on graphite, chosen to read as gym/industrial and to avoid the common neon-green look.
 - Preferences (language, theme) live outside the versioned namespace, so Reset demo keeps them and does not force an RTL restart.
 - Reset demo clears the namespace, reseeds, and returns to the splash, so the whole journey can be replayed.

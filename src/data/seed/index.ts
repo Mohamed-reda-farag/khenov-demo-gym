@@ -2,18 +2,21 @@ import type {
   Achievement,
   BodyEntry,
   Exercise,
-  GymClass,
+  BookingState,
+  ClassTemplate,
   Member,
   Membership,
   MembershipPlan,
   PersonalRecord,
+  ScheduleEntry,
   SessionState,
   Trainer,
   WorkoutLogEntry,
   WorkoutPlan,
 } from '../types';
 
-import { classes } from './classes';
+import { buildBookingState, workoutSchedule } from './bookings';
+import { classTemplates } from './classes';
 import { exercises } from './exercises';
 import { buildMember, initialSession } from './member';
 import { buildMembership, membershipPlans, workoutPlans } from './plans';
@@ -24,9 +27,11 @@ export interface SeedData {
   session: SessionState;
   member: Member;
   trainers: Trainer[];
-  classes: GymClass[];
+  classTemplates: ClassTemplate[];
   exercises: Exercise[];
   workoutPlans: WorkoutPlan[];
+  workoutSchedule: ScheduleEntry[];
+  bookingState: BookingState;
   membershipPlans: MembershipPlan[];
   membership: Membership;
   bodyEntries: BodyEntry[];
@@ -41,9 +46,11 @@ export function buildSeed(now: Date): SeedData {
     session: initialSession,
     member: buildMember(now),
     trainers,
-    classes,
+    classTemplates,
     exercises,
     workoutPlans,
+    workoutSchedule,
+    bookingState: buildBookingState(now, classTemplates),
     membershipPlans,
     membership: buildMembership(now),
     bodyEntries: buildBodyEntries(now),

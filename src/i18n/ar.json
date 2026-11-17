@@ -11,7 +11,10 @@
     "retry": "إعادة المحاولة",
     "comingSoon": "قريبًا",
     "demoBadge": "عرض تجريبي من KHENOV",
-    "demoBadgeLabel": "هذا التطبيق عرض تجريبي من KHENOV وجميع بياناته وهمية"
+    "demoBadgeLabel": "هذا التطبيق عرض تجريبي من KHENOV وجميع بياناته وهمية",
+    "close": "إغلاق",
+    "done": "تم",
+    "details": "التفاصيل"
   },
   "onboarding": {
     "pageOf": "الشريحة {{current}} من {{total}}",
@@ -56,8 +59,32 @@
     "streakDays_many": "{{countText}} يومًا متتاليًا",
     "streakDays_other": "{{countText}} يوم متتالٍ",
     "streakHint": "حافظ عليها بتمرين أو حصة اليوم",
-    "pendingTitle": "خطة اليوم والحصة القادمة",
-    "pendingBody": "ستظهر هنا خطة تمرينك والحصة التي حجزتها وأهم الاختصارات."
+    "today": {
+      "title": "خطة اليوم",
+      "start": "ابدأ التمرين",
+      "meta": "{{exercises}} · {{minutes}}",
+      "restTitle": "يوم راحة",
+      "restBody": "الاستشفاء جزء من التقدم. استرح اليوم أو احجز حصة خفيفة.",
+      "restCta": "استعرض الحصص"
+    },
+    "next": {
+      "title": "الحصة القادمة",
+      "today": "اليوم {{time}}",
+      "tomorrow": "غدًا {{time}}",
+      "day": "{{weekday}} {{time}}",
+      "with": "مع {{name}} · {{room}}",
+      "cancel": "إلغاء الحجز",
+      "emptyTitle": "لا توجد حصص قادمة",
+      "emptyBody": "احجز حصتك الأولى وابدأ أسبوعًا نشيطًا.",
+      "emptyCta": "احجز حصة"
+    },
+    "quick": {
+      "title": "اختصارات",
+      "bookClass": "احجز حصة",
+      "startWorkout": "ابدأ تمرينًا",
+      "checkIn": "تسجيل الحضور",
+      "soon": "قريبًا"
+    }
   },
   "pending": {
     "classes": {
@@ -95,5 +122,180 @@
   "error": {
     "title": "تعذر التحميل",
     "body": "حدث خطأ أثناء تحميل البيانات. تحقق من الاتصال وحاول مرة أخرى."
+  },
+  "units": {
+    "minutes_zero": "{{countText}} دقيقة",
+    "minutes_one": "دقيقة واحدة",
+    "minutes_two": "دقيقتان",
+    "minutes_few": "{{countText}} دقائق",
+    "minutes_many": "{{countText}} دقيقة",
+    "minutes_other": "{{countText}} دقيقة",
+    "exercises_zero": "لا تمارين",
+    "exercises_one": "تمرين واحد",
+    "exercises_two": "تمرينان",
+    "exercises_few": "{{countText}} تمارين",
+    "exercises_many": "{{countText}} تمرينًا",
+    "exercises_other": "{{countText}} تمرين",
+    "spotsLeft_zero": "لا أماكن متبقية",
+    "spotsLeft_one": "مكان واحد متبقٍ",
+    "spotsLeft_two": "مكانان متبقيان",
+    "spotsLeft_few": "{{countText}} أماكن متبقية",
+    "spotsLeft_many": "{{countText}} مكانًا متبقيًا",
+    "spotsLeft_other": "{{countText}} مكان متبقٍ",
+    "members_zero": "لا أحد حتى الآن",
+    "members_one": "عضو واحد",
+    "members_two": "عضوان",
+    "members_few": "{{countText}} أعضاء",
+    "members_many": "{{countText}} عضوًا",
+    "members_other": "{{countText}} عضو",
+    "classes_zero": "لا حصص",
+    "classes_one": "حصة واحدة",
+    "classes_two": "حصتان",
+    "classes_few": "{{countText}} حصص",
+    "classes_many": "{{countText}} حصة",
+    "classes_other": "{{countText}} حصة",
+    "years_zero": "{{countText}} سنة",
+    "years_one": "سنة واحدة",
+    "years_two": "سنتان",
+    "years_few": "{{countText}} سنوات",
+    "years_many": "{{countText}} سنة",
+    "years_other": "{{countText}} سنة",
+    "filters_zero": "لا فلاتر",
+    "filters_one": "فلتر واحد",
+    "filters_two": "فلتران",
+    "filters_few": "{{countText}} فلاتر",
+    "filters_many": "{{countText}} فلترًا",
+    "filters_other": "{{countText}} فلتر"
+  },
+  "classes": {
+    "title": "الحصص",
+    "subtitle": "احجز مكانك في حصص الأسبوع",
+    "filters": {
+      "open": "تصفية",
+      "title": "تصفية الحصص",
+      "type": "نوع الحصة",
+      "trainer": "المدرب",
+      "time": "وقت اليوم",
+      "apply": "عرض الحصص",
+      "clearAll": "مسح الكل",
+      "removeChip": "إزالة الفلتر: {{label}}",
+      "active": "الفلاتر المفعّلة"
+    },
+    "category": {
+      "strength": "قوة",
+      "cardio": "كارديو",
+      "hiit": "هيت",
+      "mind_body": "ذهن وجسد"
+    },
+    "timeOfDay": {
+      "morning": "صباحًا",
+      "afternoon": "ظهرًا وعصرًا",
+      "evening": "مساءً"
+    },
+    "level": {
+      "beginner": "مبتدئ",
+      "intermediate": "متوسط",
+      "advanced": "متقدم"
+    },
+    "slot": {
+      "open": "متاحة",
+      "full": "مكتملة",
+      "booked": "محجوز",
+      "waitlisted": "في الانتظار",
+      "ended": "انتهت"
+    },
+    "week": {
+      "previous": "عرض الأسبوع السابق",
+      "next": "عرض الأسبوع التالي",
+      "range": "{{from}} – {{to}}"
+    },
+    "day": {
+      "today": "اليوم",
+      "hasBooking": "لديك حجز",
+      "selected": "محدد",
+      "past": "يوم سابق"
+    },
+    "row": {
+      "with": "مع {{name}}",
+      "waitlist": "قائمة الانتظار: {{countText}}",
+      "position": "رقمك في الانتظار: {{positionText}}",
+      "open": "افتح تفاصيل الحصة"
+    },
+    "empty": {
+      "dayTitle": "لا حصص في هذا اليوم",
+      "dayBody": "اختر يومًا آخر من الأسبوع.",
+      "filteredTitle": "لا توجد حصص مطابقة",
+      "filteredBody": "جرّب تغيير الفلاتر أو اختيار يوم آخر.",
+      "clearFilters": "مسح الفلاتر"
+    }
+  },
+  "details": {
+    "title": "تفاصيل الحصة",
+    "about": "عن الحصة",
+    "trainer": "المدرب",
+    "when": "الموعد",
+    "duration": "المدة",
+    "room": "القاعة",
+    "level": "المستوى",
+    "capacity": "السعة",
+    "capacityValue": "{{bookedText}} من {{capacityText}} محجوز",
+    "onList": "المسجلون",
+    "waiting": "في قائمة الانتظار",
+    "requirements": "ما تحتاجه",
+    "yearsExperience": "{{years}} خبرة",
+    "action": {
+      "book": "احجز مكانك",
+      "joinWaitlist": "انضم لقائمة الانتظار",
+      "cancel": "إلغاء الحجز",
+      "leaveWaitlist": "مغادرة قائمة الانتظار",
+      "ended": "انتهت هذه الحصة"
+    },
+    "note": {
+      "booked": "مكانك محجوز. يمكنك الإلغاء حتى ساعتين قبل بدء الحصة.",
+      "bookedLocked": "مكانك محجوز. انتهت مهلة الإلغاء، وهي ساعتان قبل بدء الحصة.",
+      "full": "الحصة مكتملة. انضم لقائمة الانتظار وسنؤكد لك أول مكان يتوفر.",
+      "waitlisted": "أنت في قائمة الانتظار. عند توفر مكان سيتم تأكيد حجزك تلقائيًا وسنخبرك.",
+      "open": "الحجز مجاني ضمن عضويتك.",
+      "ended": "يمكنك اختيار حصة قادمة من الجدول."
+    },
+    "notFound": {
+      "title": "لم نجد هذه الحصة",
+      "body": "ربما انتهى عرضها. تصفح جدول الحصص واختر موعدًا آخر.",
+      "cta": "إلى جدول الحصص"
+    }
+  },
+  "success": {
+    "title": "تم تأكيد حجزك",
+    "body": "نراك في الحصة! هذا ملخص حجزك.",
+    "when": "الموعد",
+    "trainer": "المدرب",
+    "room": "القاعة",
+    "done": "تم",
+    "undo": "تراجع عن الحجز"
+  },
+  "toast": {
+    "cancelled": "تم إلغاء حجزك في {{name}}",
+    "undo": "تراجع",
+    "undone": "تم التراجع",
+    "bookingUndone": "تم إلغاء الحجز",
+    "waitlistJoined": "أنت في قائمة الانتظار. رقمك {{positionText}}",
+    "waitlistLeft": "غادرت قائمة الانتظار",
+    "promoted": "توفر مكان! تم تأكيد حجزك في {{name}}"
+  },
+  "errors": {
+    "generic": "حدث خطأ غير متوقع. حاول مرة أخرى.",
+    "booking": {
+      "not_found": "تعذر العثور على هذه الحصة.",
+      "in_past": "هذه الحصة بدأت أو انتهت.",
+      "already_booked": "أنت محجوز في هذه الحصة بالفعل.",
+      "already_waitlisted": "أنت في قائمة الانتظار بالفعل.",
+      "class_full": "اكتملت الحصة. يمكنك الانضمام لقائمة الانتظار.",
+      "class_not_full": "توجد أماكن متاحة. يمكنك الحجز مباشرة.",
+      "overlap": "لديك حجز آخر يتعارض مع موعد هذه الحصة.",
+      "not_booked": "لا يوجد حجز لإلغائه.",
+      "not_waitlisted": "لست في قائمة الانتظار.",
+      "cutoff_passed": "لا يمكن الإلغاء قبل بدء الحصة بأقل من ساعتين.",
+      "undo_unavailable": "انتهت مهلة التراجع."
+    }
   }
 }

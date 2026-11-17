@@ -3,7 +3,7 @@ import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 import { typography, useTheme, type ColorTokens, type TextVariant } from '@/theme';
 
 export type TextColor =
-  'text' | 'secondary' | 'muted' | 'accent' | 'onAccent' | 'danger' | 'success';
+  'text' | 'secondary' | 'muted' | 'accent' | 'onAccent' | 'danger' | 'success' | 'warning';
 
 const colorKey: Record<TextColor, keyof ColorTokens> = {
   text: 'text',
@@ -13,6 +13,7 @@ const colorKey: Record<TextColor, keyof ColorTokens> = {
   onAccent: 'onAccent',
   danger: 'danger',
   success: 'success',
+  warning: 'warning',
 };
 
 export interface TextProps extends RNTextProps {

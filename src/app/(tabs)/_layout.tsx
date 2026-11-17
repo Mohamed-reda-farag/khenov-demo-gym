@@ -1,6 +1,7 @@
 import { Redirect } from 'expo-router';
 import { Tabs } from 'expo-router/js-tabs';
 
+import { useWaitlistSettlement } from '@/features/classes/useWaitlistSettlement';
 import { TabBar } from '@/features/shell/TabBar';
 import { useSession } from '@/features/shell/SessionProvider';
 import { useTheme } from '@/theme';
@@ -8,6 +9,7 @@ import { useTheme } from '@/theme';
 export default function TabsLayout() {
   const { status, session } = useSession();
   const { colors } = useTheme();
+  useWaitlistSettlement();
 
   if (status === 'ready' && !session.loggedIn) return <Redirect href="/" />;
 

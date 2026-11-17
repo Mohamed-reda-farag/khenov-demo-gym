@@ -29,22 +29,90 @@ export interface Trainer {
   yearsExperience: number;
 }
 
-export interface GymClass {
+/** A recurring weekly class. Real sessions are generated from templates for a rolling window. */
+export interface ClassTemplate {
   id: string;
   name: Localized;
   trainerId: string;
   /** 0 = Sunday ... 6 = Saturday */
   dayOfWeek: number;
-  /** 24h "HH:mm" */
+  /** 24h "HH:mm", local time */
   startTime: string;
   durationMin: number;
   capacity: number;
-  booked: number;
-  waitlist: number;
+  /** Seats already taken by other members, before the demo member books. */
+  baseBooked: number;
+  /** Other members already waiting, before the demo member joins. */
+  baseWaitlist: number;
   level: Level;
   category: ClassCategory;
   room: Localized;
   description: Localized;
+  requirements: Localized[];
+}
+
+export type ClassSlotState = 'open' | 'full' | 'booked' | 'waitlisted' | 'ended';
+
+export interface Booking {
+  /** One booking per session, so the id is derived from the session id. */
+  id: string;
+  sessionId: string;
+  templateId: string;
+  startAt: string;
+  endAt: string;
+  status: 'booked' | 'waitlisted';
+  createdAt: string;
+  waitlistPosition: number | null;
+  /** Demo simulation: when a waitlisted booking is promoted because someone else cancelled. */
+  promotionDueAt: string | null;
+}
+
+/** Changes to the "other members" numbers of one session (promotions, simulated cancellations). */
+export interface SessionAdjustment {
+  booked: number;
+  waitlist: number;
+}
+
+export interface CancellationUndo {
+  booking: Booking;
+  adjustmentBefore: SessionAdjustment;
+  expiresAt: string;
+}
+
+export interface BookingState {
+  bookings: Booking[];
+  adjustments: Record<string, SessionAdjustment>;
+  lastCancellation: CancellationUndo | null;
+}
+
+export interface ScheduleEntry {
+  /** 0 = Sunday ... 6 = Saturday */
+  dayOfWeek: number;
+  planId: string;
+}
+
+export interface ClassSessionView {
+  id: string;
+  templateId: string;
+  name: Localized;
+  description: Localized;
+  requirements: Localized[];
+  trainer: Trainer;
+  room: Localized;
+  level: Level;
+  category: ClassCategory;
+  durationMin: number;
+  startAt: string;
+  endAt: string;
+  capacity: number;
+  bookedCount: number;
+  spotsLeft: number;
+  waitlistCount: number;
+  slot: ClassSlotState;
+  waitlistPosition: number | null;
+  /** True while the member may still cancel (booked and at least the cutoff before start). */
+  canCancel: boolean;
+  cancelDeadline: string;
 }
 
 export interface Exercise {
