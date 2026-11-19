@@ -11,7 +11,6 @@ export function buildMember(now: Date): Member {
     goal: { ar: 'زيادة القوة وتحسين اللياقة', en: 'Build strength and improve fitness' },
     joinedAt: joined.toISOString(),
     heightCm: 168,
-    streakDays: 6,
     membershipPlanId: 'plan-quarterly',
   };
 }

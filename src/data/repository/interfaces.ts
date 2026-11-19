@@ -1,5 +1,7 @@
 import type {
-  Achievement,
+  ActiveSession,
+  AchievementStatus,
+  BodyDraft,
   BodyEntry,
   Exercise,
   ClassSessionView,
@@ -7,10 +9,12 @@ import type {
   Membership,
   MembershipPlan,
   PersonalRecord,
+  ScheduleEntry,
   Prefs,
   SessionState,
   Trainer,
-  WorkoutLogEntry,
+  PrHit,
+  WorkoutSession,
   WorkoutPlan,
 } from '../types';
 
@@ -56,6 +60,7 @@ export interface WorkoutPlanRepository {
   list(): Promise<WorkoutPlan[]>;
   /** The plan scheduled for today, or null on a rest day. */
   getForToday(now?: Date): Promise<WorkoutPlan | null>;
+  getSchedule(): Promise<ScheduleEntry[]>;
 }
 
 export interface MembershipRepository {
@@ -64,10 +69,43 @@ export interface MembershipRepository {
 }
 
 export interface ProgressRepository {
+  /** Oldest first. */
   listBodyEntries(): Promise<BodyEntry[]>;
+  addBodyEntry(draft: BodyDraft): Promise<BodyEntry>;
+  /** Returns the new entry and the one it replaced, so the change can be undone. */
+  updateBodyEntry(id: string, draft: BodyDraft): Promise<{ entry: BodyEntry; previous: BodyEntry }>;
+  removeBodyEntry(id: string): Promise<BodyEntry>;
+  restoreBodyEntry(entry: BodyEntry): Promise<void>;
+  /** The generated history of the last weeks plus workouts done in this demo, oldest first. */
+  listSessions(): Promise<WorkoutSession[]>;
   listPersonalRecords(): Promise<PersonalRecord[]>;
-  listAchievements(): Promise<Achievement[]>;
-  listWorkoutLog(): Promise<WorkoutLogEntry[]>;
+  listAchievements(): Promise<AchievementStatus[]>;
+  getStreak(): Promise<number>;
+}
+
+export interface FinishResult {
+  session: WorkoutSession;
+  prs: PrHit[];
+  newlyUnlocked: AchievementStatus[];
+  streak: number;
+}
+
+export interface SessionSummary {
+  session: WorkoutSession;
+  prs: PrHit[];
+  unlocked: AchievementStatus[];
+  streak: number;
+}
+
+/** Rules are enforced here and reported as typed `WorkoutError` / `BodyError`. */
+export interface WorkoutSessionRepository {
+  getActive(): Promise<ActiveSession | null>;
+  start(planId: string): Promise<ActiveSession>;
+  /** Called after every change so the session survives a restart. Fast, no simulated delay. */
+  saveActive(session: ActiveSession): Promise<void>;
+  discardActive(): Promise<void>;
+  finish(session: ActiveSession): Promise<FinishResult>;
+  getSummary(sessionId: string): Promise<SessionSummary>;
 }
 
 export interface PrefsRepository {

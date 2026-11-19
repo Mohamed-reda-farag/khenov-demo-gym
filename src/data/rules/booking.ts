@@ -4,11 +4,12 @@ import type {
   ClassSessionView,
   ClassSlotState,
   ClassTemplate,
+  DemoSlot,
   SessionAdjustment,
   Trainer,
 } from '../types';
 
-import { resolveSession, type SessionTiming } from './sessions';
+import { generateSessionTimings, resolveSession, type SessionTiming } from './sessions';
 
 export const CANCEL_CUTOFF_MS = 2 * 60 * 60 * 1000;
 export const UNDO_WINDOW_MS = 15_000;
@@ -48,7 +49,7 @@ export interface RuleContext {
 }
 
 export function emptyBookingState(): BookingState {
-  return { bookings: [], adjustments: {}, lastCancellation: null };
+  return { bookings: [], demoSlots: [], adjustments: {}, lastCancellation: null };
 }
 
 const iso = (ms: number) => new Date(ms).toISOString();
@@ -103,6 +104,7 @@ function newBooking(
     createdAt: now.toISOString(),
     waitlistPosition: null,
     promotionDueAt: null,
+    source: 'user',
     ...extra,
   };
 }
@@ -115,6 +117,44 @@ function assertNoDuplicate(state: BookingState, sessionId: string) {
   const mine = bookingFor(state, sessionId);
   if (mine)
     throw new BookingError(mine.status === 'booked' ? 'already_booked' : 'already_waitlisted');
+}
+
+function setDemoSlot(slots: DemoSlot[], booking: Booking, status: DemoSlot['status']): DemoSlot[] {
+  if (booking.source !== 'demo') return slots;
+  return slots.map((slot) => (slot.templateId === booking.templateId ? { ...slot, status } : slot));
+}
+
+/**
+ * Keeps one upcoming booking for every active demo slot: when the booked occurrence has passed,
+ * the next occurrence takes its place. Runs on every read, so a visitor who comes back days later
+ * still has bookings ahead. Bookings the member made are never touched.
+ */
+export function syncDemoBookings(state: BookingState, ctx: RuleContext): BookingState {
+  const nowMs = ctx.now.getTime();
+  let current = state;
+  for (const slot of state.demoSlots) {
+    if (slot.status !== 'active') continue;
+    const isMine = (b: Booking) => b.source === 'demo' && b.templateId === slot.templateId;
+    if (current.bookings.some((b) => isMine(b) && Date.parse(b.startAt) > nowMs)) continue;
+    const next = generateSessionTimings(ctx.templates, ctx.now).find(
+      (t) => t.templateId === slot.templateId && t.startMs > nowMs,
+    );
+    if (
+      !next ||
+      current.bookings.some((b) => b.sessionId === next.id) ||
+      findOverlap(current, next)
+    ) {
+      continue;
+    }
+    current = {
+      ...current,
+      bookings: [
+        ...current.bookings.filter((b) => !isMine(b)),
+        newBooking(next, 'booked', ctx.now, { source: 'demo' }),
+      ],
+    };
+  }
+  return current;
 }
 
 export function applyBook(state: BookingState, sessionId: string, ctx: RuleContext): BookingState {
@@ -169,6 +209,7 @@ export function applyCancel(
   }
   return {
     bookings: state.bookings.filter((b) => b.sessionId !== sessionId),
+    demoSlots: setDemoSlot(state.demoSlots, mine, 'released'),
     adjustments: { ...state.adjustments, [sessionId]: after },
     lastCancellation: {
       booking: mine,
@@ -211,6 +252,7 @@ export function applyUndoCancel(
   if (clash) throw new BookingError('overlap', clash);
   return {
     bookings: [...state.bookings, last.booking],
+    demoSlots: setDemoSlot(state.demoSlots, last.booking, 'active'),
     adjustments: { ...state.adjustments, [sessionId]: last.adjustmentBefore },
     lastCancellation: null,
   };

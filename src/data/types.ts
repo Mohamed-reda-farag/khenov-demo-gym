@@ -17,7 +17,6 @@ export interface Member {
   goal: Localized;
   joinedAt: string;
   heightCm: number;
-  streakDays: number;
   membershipPlanId: string;
 }
 
@@ -61,6 +60,8 @@ export interface Booking {
   startAt: string;
   endAt: string;
   status: 'booked' | 'waitlisted';
+  /** 'demo' bookings come from a standing demo slot and follow today's date at runtime. */
+  source: 'user' | 'demo';
   createdAt: string;
   waitlistPosition: number | null;
   /** Demo simulation: when a waitlisted booking is promoted because someone else cancelled. */
@@ -79,8 +80,16 @@ export interface CancellationUndo {
   expiresAt: string;
 }
 
+/** A class the demo member is always booked into: the next upcoming occurrence, at runtime. */
+export interface DemoSlot {
+  templateId: string;
+  /** 'released' once the member cancels it, so it never comes back by itself. */
+  status: 'active' | 'released';
+}
+
 export interface BookingState {
   bookings: Booking[];
+  demoSlots: DemoSlot[];
   adjustments: Record<string, SessionAdjustment>;
   lastCancellation: CancellationUndo | null;
 }
@@ -156,35 +165,12 @@ export interface Membership {
 }
 
 export interface BodyEntry {
+  id: string;
   date: string;
   weightKg: number;
   waistCm: number;
   chestCm: number;
   armCm: number;
-}
-
-export interface PersonalRecord {
-  exerciseId: string;
-  weightKg: number;
-  reps: number;
-  date: string;
-}
-
-export interface Achievement {
-  id: string;
-  title: Localized;
-  description: Localized;
-  progress: number;
-  target: number;
-}
-
-export interface WorkoutLogEntry {
-  id: string;
-  planId: string;
-  date: string;
-  durationMin: number;
-  volumeKg: number;
-  setsCompleted: number;
 }
 
 export interface SessionState {
@@ -196,3 +182,87 @@ export interface Prefs {
   language: Language;
   theme: 'dark' | 'light';
 }
+
+export interface LoggedSet {
+  weightKg: number;
+  reps: number;
+}
+
+export interface SessionExercise {
+  exerciseId: string;
+  sets: LoggedSet[];
+}
+
+/** A finished workout, kept in the history. */
+export interface WorkoutSession {
+  id: string;
+  planId: string;
+  startedAt: string;
+  endedAt: string;
+  durationSec: number;
+  exercises: SessionExercise[];
+  /** Sum of weight x reps. Bodyweight sets (0 kg) add nothing. */
+  volumeKg: number;
+  setsCompleted: number;
+  /** Saved before every planned set was done. */
+  partial: boolean;
+  unlockedAchievementIds: string[];
+}
+
+export interface BestSet {
+  weightKg: number;
+  reps: number;
+}
+
+export interface PrHit {
+  exerciseId: string;
+  best: BestSet;
+  /** The record before this session. */
+  previous: BestSet;
+}
+
+export interface PersonalRecord extends BestSet {
+  exerciseId: string;
+  date: string;
+}
+
+export interface AchievementDef {
+  id: string;
+  title: Localized;
+  description: Localized;
+  target: number;
+}
+
+export interface AchievementStatus extends AchievementDef {
+  progress: number;
+  unlockedAt: string | null;
+}
+
+/** Wall-clock countdown. Values are timestamps, so it survives re-renders and background time. */
+export interface RestTimer {
+  durationMs: number;
+  endsAtMs: number;
+  /** Set while paused: the time left when it was paused. */
+  pausedRemainingMs: number | null;
+}
+
+export interface ActiveExercise {
+  exerciseId: string;
+  targetSets: number;
+  targetReps: number;
+  restSec: number;
+  sets: LoggedSet[];
+}
+
+/** The workout in progress. Saved on every change so it can be resumed after a restart. */
+export interface ActiveSession {
+  id: string;
+  planId: string;
+  startedAtMs: number;
+  exercises: ActiveExercise[];
+  currentIndex: number;
+  rest: RestTimer | null;
+}
+
+export type BodyMeasure = 'weightKg' | 'waistCm' | 'chestCm' | 'armCm';
+export type BodyDraft = Omit<BodyEntry, 'id'>;

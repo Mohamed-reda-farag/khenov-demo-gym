@@ -23,17 +23,39 @@ Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 
 - Web console errors fixed: native-only a11y props (`accessibilityElementsHidden`, `importantForAccessibility`) were reaching DOM elements through react-native-svg. Decorative elements now use `aria-hidden`, the logo uses `aria-label`. Rule: only `aria-*` props on elements that can render as SVG/DOM on web.
 
+### M1 fix: demo bookings follow today at runtime
+
+- The seed stores no fixed bookings, only two standing "demo slots". On every read the next upcoming occurrence of each slot is worked out for the current day, so a visitor opening the demo days later still has bookings ahead. Bookings the member made are stored as they are and never touched.
+- Cancelling a demo booking releases its slot for good (until Reset demo); undo restores it. `SEED_VERSION` is 3.
+- Tests: two upcoming, non-overlapping bookings on 14 different days and several hours, and as stored state ages for 40 days.
+
+### M2 Workout session flow + Progress
+
+- Workout tab: today's workout from the schedule (or a rest day), all three plans with their days, plan detail (days, exercises, sets x reps, rest, estimated time), start session, resume or discard banner (also on Home), recent sessions, exercise library (search and muscle filter) and exercise detail with a small chart of the best weight per session.
+- Active session (`/session`): exercise card with icon, target, last time; weight and reps steppers with large targets; "same as last"; complete set; add or skip a set; undo last set; swipe or buttons between exercises; exercise list sheet; automatic rest timer (60 to 90 s, plus or minus 15 s, pause, skip) with haptics and spoken announcements at the start, at ten seconds and at the end.
+- The timer stores timestamps (`endsAt`), so it is exact after re-renders, background time and app restarts. Only the countdown component ticks. The live session is saved after every change and offered for resuming after a restart.
+- Finish saves to history and opens the summary: time, volume, sets, new records highlighted, streak, unlocked achievements, a short transform and opacity celebration. Leaving early asks: save what was done, discard, or continue.
+- Progress tab: range selector (4 weeks, 8 weeks, all), weight chart, one selectable measurement chart, weekly volume bars, all drawn with react-native-svg; touch or drag shows a value tooltip; every chart has a text summary and a spoken label. Add, edit and delete measurements with Undo. Personal records, streak, five achievements.
+- Rules in `src/data/rules` with typed errors: set validation, volume, record detection, streak, achievements, rest timer, active session, body measurements.
+- History is generated at runtime relative to today (24 sessions over eight weeks, a six day streak ending yesterday), so one workout today makes a seven day streak and unlocks two achievements. Sessions done in the demo are stored and appended.
+
 ## Next
 
-- M1: Home (today's plan, next class, quick actions), Classes (schedule, filters, details, book/cancel, capacity, waitlist, confirmation), all states.
-- Classes, Workout and Progress tabs are intentional "coming soon" shells until their milestones.
+- M3: Membership, QR check-in pass, profile and settings (notification toggles simulated), motion and gestures polish, RTL audit, accessibility pass, performance on mid-range Android.
 
 ## Decisions
+
+- Typed routes are off (`experiments.typedRoutes` removed, `.expo/types` no longer in tsconfig). The generated route types only refresh when the dev server or an export runs, so `npm run check` failed after any milestone that added a route until the server was started once. Routes are plain strings now; the check no longer depends on generated files.
 
 - Classes are weekly templates; sessions are generated for a rolling window (the current Saturday-based week plus the next one), so the demo works on any day. Only the member's bookings and small seat adjustments are stored.
 - Seed version is 2 (the class data model changed), so old local data is purged and reseeded automatically.
 - The day selector shows one week of seven days in a fixed row with previous/next week buttons, instead of a horizontal scroll list, so there is no scroll offset to mirror in RTL. Cells are about 45dp wide on a 360dp phone.
 - Undo of a cancellation restores seat counts exactly (the repository keeps the previous state for 15 seconds), so a waitlist promotion caused by the cancel is reverted too.
+- Chart time axis follows the reading direction: oldest on the left in English, oldest on the right in Arabic (the vertical axis labels stay on the start side). Tooltip and label positions are computed from the same mirrored scale, which is the only place physical `left` values are used.
+- Streak means consecutive days with at least one workout. It stays alive when the last workout was yesterday, because today is not over.
+- A record is a heavier set, or the same weight for more reps. The first time an exercise is logged sets a baseline and is not a record. Volume counts external weight only, so bodyweight sets add nothing.
+- Achievements are computed from the real history. Earned ones are stored and never unlock twice; the seed stores the two already earned.
+- Body measurements are stored (seeded as eight weekly entries ending on the day of seeding), so they can be edited and deleted. Unlike workouts they do not move with today's date; Reset demo refreshes them.
 - Vitest instead of Jest: the rules are pure TypeScript, so no React Native transform is needed. It is the only new dependency (dev only).
 
 - Accent is signal yellow on graphite, chosen to read as gym/industrial and to avoid the common neon-green look.

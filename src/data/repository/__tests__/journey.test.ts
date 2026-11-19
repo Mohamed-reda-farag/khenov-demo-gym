@@ -1,5 +1,7 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { logAllForTest } from '../../rules/__tests__/helpers';
+
 const store = new Map<string, string>();
 
 vi.mock('react-native', () => ({ Platform: { OS: 'ios' } }));
@@ -184,5 +186,171 @@ describe('a visitor journey through the repositories', () => {
     await reset.resetDemo();
     expect(await repos.classRepository.listUpcomingBooked()).toHaveLength(2);
     expect((await repos.sessionRepository.get()).loggedIn).toBe(false);
+  });
+});
+
+async function failure(promise: Promise<unknown>): Promise<string> {
+  try {
+    await promise;
+    return 'ok';
+  } catch (error) {
+    if (error instanceof repos.WorkoutError || error instanceof repos.BodyError) return error.code;
+    throw error;
+  }
+}
+
+describe('a workout through the repositories', () => {
+  it('starts, saves progress, resumes after a restart, and allows one session at a time', async () => {
+    const [plan] = await repos.workoutPlanRepository.list();
+    expect(await repos.workoutSessionRepository.getActive()).toBeNull();
+    const active = await repos.workoutSessionRepository.start(plan!.id);
+    expect(await failure(repos.workoutSessionRepository.start(plan!.id))).toBe(
+      'session_in_progress',
+    );
+    expect(await failure(repos.workoutSessionRepository.start('nope'))).toBe('session_in_progress');
+
+    const edited = { ...active, currentIndex: 2 };
+    await repos.workoutSessionRepository.saveActive(edited);
+    expect((await repos.workoutSessionRepository.getActive())?.currentIndex).toBe(2);
+
+    await repos.workoutSessionRepository.discardActive();
+    expect(await repos.workoutSessionRepository.getActive()).toBeNull();
+    expect(await failure(repos.workoutSessionRepository.start('nope'))).toBe('plan_not_found');
+  });
+
+  it('refuses to finish with nothing logged and without an active session', async () => {
+    const [plan] = await repos.workoutPlanRepository.list();
+    const active = await repos.workoutSessionRepository.start(plan!.id);
+    expect(await failure(repos.workoutSessionRepository.finish(active))).toBe('no_sets');
+    await repos.workoutSessionRepository.discardActive();
+    expect(await failure(repos.workoutSessionRepository.finish(active))).toBe('no_active_session');
+  });
+
+  it('finishes: saves to history, finds records, unlocks achievements and extends the streak', async () => {
+    const before = await repos.progressRepository.listSessions();
+    expect(before).toHaveLength(24);
+    expect(await repos.progressRepository.getStreak()).toBe(6);
+
+    const [plan] = await repos.workoutPlanRepository.list();
+    const started = await repos.workoutSessionRepository.start(plan!.id);
+    const full = logAllForTest(started, 120);
+    const result = await repos.workoutSessionRepository.finish(full);
+
+    expect(result.session.partial).toBe(false);
+    expect(result.streak).toBe(7);
+    expect(result.prs.some((p) => p.exerciseId === 'bench-press')).toBe(true);
+    expect(result.newlyUnlocked.map((a) => a.id).sort()).toEqual(['sessions-25', 'streak-7']);
+    expect(await repos.workoutSessionRepository.getActive()).toBeNull();
+
+    expect(await repos.progressRepository.listSessions()).toHaveLength(25);
+    expect(await repos.progressRepository.getStreak()).toBe(7);
+    const records = await repos.progressRepository.listPersonalRecords();
+    expect(records.find((r) => r.exerciseId === 'bench-press')?.weightKg).toBe(120);
+    const statuses = await repos.progressRepository.listAchievements();
+    expect(statuses.find((a) => a.id === 'streak-7')?.unlockedAt).not.toBeNull();
+
+    const summary = await repos.workoutSessionRepository.getSummary(result.session.id);
+    expect(summary.prs).toEqual(result.prs);
+    expect(summary.unlocked.map((a) => a.id).sort()).toEqual(['sessions-25', 'streak-7']);
+    expect(summary.streak).toBe(7);
+
+    // a second workout does not unlock them again
+    const again = await repos.workoutSessionRepository.start(plan!.id);
+    const second = await repos.workoutSessionRepository.finish(logAllForTest(again, 125));
+    expect(second.newlyUnlocked).toEqual([]);
+  });
+
+  it('saves a partial session and keeps only what was logged', async () => {
+    const [plan] = await repos.workoutPlanRepository.list();
+    const started = await repos.workoutSessionRepository.start(plan!.id);
+    const rules = await import('@/data/rules/activeSession');
+    const partial = rules.logSet(started, { weightKg: 60, reps: 8 }, Date.now());
+    const result = await repos.workoutSessionRepository.finish(partial);
+    expect(result.session.partial).toBe(true);
+    expect(result.session.exercises).toHaveLength(1);
+    expect(result.session.volumeKg).toBe(480);
+  });
+
+  it('reports an unknown summary as a typed error', async () => {
+    expect(await failure(repos.workoutSessionRepository.getSummary('missing'))).toBe(
+      'session_not_found',
+    );
+  });
+
+  it('Reset demo forgets workouts, unlocks and any session in progress', async () => {
+    const [plan] = await repos.workoutPlanRepository.list();
+    const started = await repos.workoutSessionRepository.start(plan!.id);
+    await repos.workoutSessionRepository.finish(logAllForTest(started, 100));
+    const again = await repos.workoutSessionRepository.start(plan!.id);
+    expect(again).toBeDefined();
+    await reset.resetDemo();
+    expect(await repos.workoutSessionRepository.getActive()).toBeNull();
+    expect(await repos.progressRepository.listSessions()).toHaveLength(24);
+    expect(await repos.progressRepository.getStreak()).toBe(6);
+  });
+});
+
+describe('body measurements through the repository', () => {
+  const draft = {
+    date: new Date().toISOString(),
+    weightKg: 79.2,
+    waistCm: 87.5,
+    chestCm: 102.8,
+    armCm: 33.5,
+  };
+
+  it('lists the eight seeded weeks, oldest first', async () => {
+    const entries = await repos.progressRepository.listBodyEntries();
+    expect(entries).toHaveLength(8);
+    const times = entries.map((e) => Date.parse(e.date));
+    expect(times).toEqual([...times].sort((a, b) => a - b));
+  });
+
+  it('adds, updates, removes and restores an entry', async () => {
+    const added = await repos.progressRepository.addBodyEntry(draft);
+    expect(await repos.progressRepository.listBodyEntries()).toHaveLength(9);
+
+    const { entry, previous } = await repos.progressRepository.updateBodyEntry(added.id, {
+      ...draft,
+      weightKg: 78.9,
+    });
+    expect(entry.weightKg).toBe(78.9);
+    expect(previous.weightKg).toBe(79.2);
+
+    const removed = await repos.progressRepository.removeBodyEntry(added.id);
+    expect(await repos.progressRepository.listBodyEntries()).toHaveLength(8);
+    await repos.progressRepository.restoreBodyEntry(removed);
+    await repos.progressRepository.restoreBodyEntry(removed);
+    expect(await repos.progressRepository.listBodyEntries()).toHaveLength(9);
+  });
+
+  it('refuses values out of range and unknown entries with typed errors', async () => {
+    expect(await failure(repos.progressRepository.addBodyEntry({ ...draft, weightKg: 12 }))).toBe(
+      'invalid_weightKg',
+    );
+    expect(await failure(repos.progressRepository.addBodyEntry({ ...draft, armCm: 200 }))).toBe(
+      'invalid_armCm',
+    );
+    expect(
+      await failure(
+        repos.progressRepository.addBodyEntry({
+          ...draft,
+          date: new Date(Date.now() + 9 * 86_400_000).toISOString(),
+        }),
+      ),
+    ).toBe('invalid_date');
+    expect(await failure(repos.progressRepository.removeBodyEntry('missing'))).toBe('not_found');
+    expect(await failure(repos.progressRepository.updateBodyEntry('missing', draft))).toBe(
+      'not_found',
+    );
+  });
+
+  it('lets a brand-new member start with no measurements', async () => {
+    for (const e of await repos.progressRepository.listBodyEntries()) {
+      await repos.progressRepository.removeBodyEntry(e.id);
+    }
+    expect(await repos.progressRepository.listBodyEntries()).toEqual([]);
+    const first = await repos.progressRepository.addBodyEntry(draft);
+    expect(first.weightKg).toBe(79.2);
   });
 });

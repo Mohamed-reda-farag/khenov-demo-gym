@@ -32,9 +32,6 @@
           "imageWidth": 160
         }
       ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    ]
   }
 }

@@ -2,7 +2,6 @@ import type {
   ExerciseRepository,
   MemberRepository,
   MembershipRepository,
-  ProgressRepository,
   TrainerRepository,
   WorkoutPlanRepository,
 } from './interfaces';
@@ -22,6 +21,7 @@ export const localExerciseRepository: ExerciseRepository = {
 
 export const localWorkoutPlanRepository: WorkoutPlanRepository = {
   list: () => readCollection('workoutPlans'),
+  getSchedule: () => readCollection('workoutSchedule'),
   async getForToday(now = new Date()) {
     const [schedule, plans] = await Promise.all([
       readCollection('workoutSchedule'),
@@ -35,11 +35,4 @@ export const localWorkoutPlanRepository: WorkoutPlanRepository = {
 export const localMembershipRepository: MembershipRepository = {
   listPlans: () => readCollection('membershipPlans'),
   getCurrent: () => readCollection('membership'),
-};
-
-export const localProgressRepository: ProgressRepository = {
-  listBodyEntries: () => readCollection('bodyEntries'),
-  listPersonalRecords: () => readCollection('personalRecords'),
-  listAchievements: () => readCollection('achievements'),
-  listWorkoutLog: () => readCollection('workoutLog'),
 };

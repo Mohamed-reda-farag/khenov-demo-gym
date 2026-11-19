@@ -95,6 +95,15 @@ export function formatWeekday(date: Date, language: Language, style: 'long' | 's
   return WEEKDAYS[language][style][date.getDay()] ?? '';
 }
 
+/** Name of a weekday by number, 0 = Sunday. */
+export function weekdayName(
+  dayOfWeek: number,
+  language: Language,
+  style: 'long' | 'short',
+): string {
+  return WEEKDAYS[language][style][dayOfWeek] ?? '';
+}
+
 export function formatDayMonth(date: Date, language: Language): string {
   const day = formatNumber(date.getDate(), language);
   return `${day} ${MONTHS[language][date.getMonth()] ?? ''}`;
@@ -110,6 +119,30 @@ export function formatTimeRange(startIso: string, endIso: string, language: Lang
   return `${formatTimeOfDay(new Date(startIso), language)} – ${formatTimeOfDay(new Date(endIso), language)}`;
 }
 
+const UNITS: Record<Language, { kg: string; cm: string }> = {
+  ar: { kg: 'كجم', cm: 'سم' },
+  en: { kg: 'kg', cm: 'cm' },
+};
+
+/** "75 kg" or "٧٥٫٥ كجم". Decimals are shown only when needed, up to `maxDecimals`. */
+export function formatMeasure(
+  value: number,
+  unit: 'kg' | 'cm',
+  language: Language,
+  maxDecimals = 1,
+): string {
+  return `${formatNumber(value, language, maxDecimals)} ${UNITS[language][unit]}`;
+}
+
+/** Minutes and seconds for a countdown, e.g. 01:05, with digits for the language. */
+export function formatCountdown(totalSeconds: number, language: Language): string {
+  const safe = Math.max(0, Math.ceil(totalSeconds));
+  const mm = String(Math.floor(safe / 60)).padStart(2, '0');
+  const ss = String(safe % 60).padStart(2, '0');
+  const text = `${mm}:${ss}`;
+  return language === 'ar' ? toArabicDigits(text) : text;
+}
+
 export function useFormat() {
   const language = useLanguage();
   return useMemo(
@@ -120,8 +153,13 @@ export function useFormat() {
       date: (iso: string, options?: Intl.DateTimeFormatOptions) =>
         formatDate(iso, language, options),
       clock: (time24: string) => formatClock(time24, language),
+      measure: (value: number, unit: 'kg' | 'cm', maxDecimals = 1) =>
+        formatMeasure(value, unit, language, maxDecimals),
+      countdown: (totalSeconds: number) => formatCountdown(totalSeconds, language),
       weekday: (date: Date, style: 'long' | 'short' = 'long') =>
         formatWeekday(date, language, style),
+      weekdayName: (dayOfWeek: number, style: 'long' | 'short' = 'long') =>
+        weekdayName(dayOfWeek, language, style),
       dayMonth: (date: Date) => formatDayMonth(date, language),
       time: (iso: string) => formatTimeOfDay(new Date(iso), language),
       timeRange: (startIso: string, endIso: string) => formatTimeRange(startIso, endIso, language),

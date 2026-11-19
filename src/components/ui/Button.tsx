@@ -22,6 +22,8 @@ interface ButtonProps {
   fullWidth?: boolean;
   style?: ViewStyle;
   accessibilityHint?: string;
+  /** Spoken name when it should differ from the visible label (for example "+15 s"). */
+  accessibilityLabel?: string;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -35,6 +37,7 @@ export function Button({
   fullWidth = true,
   style,
   accessibilityHint,
+  accessibilityLabel,
 }: ButtonProps) {
   const { colors } = useTheme();
   const reduceMotion = useReducedMotion();
@@ -55,7 +58,7 @@ export function Button({
   return (
     <AnimatedPressable
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={accessibilityLabel ?? label}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ disabled: inactive, busy: loading }}
       disabled={inactive}

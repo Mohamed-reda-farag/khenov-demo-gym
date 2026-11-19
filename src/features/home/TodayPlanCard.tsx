@@ -14,11 +14,14 @@ import { radius, spacing, useTheme } from '@/theme';
 interface Props {
   /** Null on a rest day. */
   plan: WorkoutPlan | null;
+  /** A session is already in progress: the button resumes it. */
+  resume: boolean;
+  busy: boolean;
   onStart: () => void;
   onBrowseClasses: () => void;
 }
 
-export function TodayPlanCard({ plan, onStart, onBrowseClasses }: Props) {
+export function TodayPlanCard({ plan, resume, busy, onStart, onBrowseClasses }: Props) {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const language = useLanguage();
@@ -78,7 +81,11 @@ export function TodayPlanCard({ plan, onStart, onBrowseClasses }: Props) {
       <Text variant="small" color="muted">
         {meta}
       </Text>
-      <Button label={t('home.today.start')} onPress={onStart} />
+      <Button
+        label={resume ? t('workout.resume.resume') : t('home.today.start')}
+        onPress={onStart}
+        loading={busy}
+      />
     </Card>
   );
 }

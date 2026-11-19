@@ -3,7 +3,10 @@
  * whole icon set. Add new icons here, one line each.
  */
 export type { LucideIcon } from 'lucide-react-native';
+export { default as Activity } from 'lucide-react-native/icons/activity';
 export { default as Ban } from 'lucide-react-native/icons/ban';
+export { default as BookOpen } from 'lucide-react-native/icons/book-open';
+export { default as Cable } from 'lucide-react-native/icons/cable';
 export { default as CalendarCheck } from 'lucide-react-native/icons/calendar-check';
 export { default as CalendarDays } from 'lucide-react-native/icons/calendar-days';
 export { default as ChartLine } from 'lucide-react-native/icons/chart-line';
@@ -13,19 +16,34 @@ export { default as ChevronRight } from 'lucide-react-native/icons/chevron-right
 export { default as Clock } from 'lucide-react-native/icons/clock';
 export { default as Dumbbell } from 'lucide-react-native/icons/dumbbell';
 export { default as Flame } from 'lucide-react-native/icons/flame';
+export { default as HeartPulse } from 'lucide-react-native/icons/heart-pulse';
 export { default as Hourglass } from 'lucide-react-native/icons/hourglass';
 export { default as House } from 'lucide-react-native/icons/house';
 export { default as Info } from 'lucide-react-native/icons/info';
+export { default as List } from 'lucide-react-native/icons/list';
+export { default as Lock } from 'lucide-react-native/icons/lock';
 export { default as MapPin } from 'lucide-react-native/icons/map-pin';
+export { default as Minus } from 'lucide-react-native/icons/minus';
 export { default as Moon } from 'lucide-react-native/icons/moon';
+export { default as PartyPopper } from 'lucide-react-native/icons/party-popper';
+export { default as Pause } from 'lucide-react-native/icons/pause';
+export { default as Pencil } from 'lucide-react-native/icons/pencil';
+export { default as PersonStanding } from 'lucide-react-native/icons/person-standing';
 export { default as Play } from 'lucide-react-native/icons/play';
 export { default as Plus } from 'lucide-react-native/icons/plus';
 export { default as QrCode } from 'lucide-react-native/icons/qr-code';
 export { default as RotateCcw } from 'lucide-react-native/icons/rotate-ccw';
+export { default as Search } from 'lucide-react-native/icons/search';
+export { default as SkipForward } from 'lucide-react-native/icons/skip-forward';
 export { default as SlidersHorizontal } from 'lucide-react-native/icons/sliders-horizontal';
 export { default as Timer } from 'lucide-react-native/icons/timer';
+export { default as Trash2 } from 'lucide-react-native/icons/trash-2';
+export { default as Star } from 'lucide-react-native/icons/star';
+export { default as TrendingDown } from 'lucide-react-native/icons/trending-down';
 export { default as TrendingUp } from 'lucide-react-native/icons/trending-up';
 export { default as TriangleAlert } from 'lucide-react-native/icons/triangle-alert';
+export { default as Trophy } from 'lucide-react-native/icons/trophy';
+export { default as Undo2 } from 'lucide-react-native/icons/undo-2';
 export { default as User } from 'lucide-react-native/icons/user';
 export { default as Users } from 'lucide-react-native/icons/users';
 export { default as X } from 'lucide-react-native/icons/x';

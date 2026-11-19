@@ -21,6 +21,8 @@ interface BottomSheetProps {
   children: ReactNode;
   /** When false the sheet ignores backdrop taps and swipe-down (e.g. while a request runs). */
   dismissible?: boolean;
+  /** Set to false when the content scrolls: only the handle at the top then drags the sheet. */
+  dragFromAnywhere?: boolean;
 }
 
 const CLOSE_DISTANCE = 120;
@@ -32,6 +34,7 @@ export function BottomSheet({
   accessibilityLabel,
   children,
   dismissible = true,
+  dragFromAnywhere = true,
 }: BottomSheetProps) {
   const { colors } = useTheme();
   const { dir } = useDirection();
@@ -92,25 +95,40 @@ export function BottomSheet({
             accessibilityLabel={accessibilityLabel}
           />
         </Animated.View>
-        <GestureDetector gesture={pan}>
-          <Animated.View
-            accessibilityViewIsModal
-            accessibilityLabel={accessibilityLabel}
-            style={[
-              styles.sheet,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                paddingBottom: insets.bottom + spacing.lg,
-                boxShadow: shadow.sheet,
-              },
-              sheetStyle,
-            ]}
-          >
-            <View style={[styles.grabber, { backgroundColor: colors.border }]} />
-            {children}
-          </Animated.View>
-        </GestureDetector>
+        {(() => {
+          const sheet = (
+            <Animated.View
+              accessibilityViewIsModal
+              accessibilityLabel={accessibilityLabel}
+              style={[
+                styles.sheet,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  paddingBottom: insets.bottom + spacing.lg,
+                  boxShadow: shadow.sheet,
+                },
+                sheetStyle,
+              ]}
+            >
+              {dragFromAnywhere ? (
+                <View style={[styles.grabber, { backgroundColor: colors.border }]} />
+              ) : (
+                <GestureDetector gesture={pan}>
+                  <View style={styles.handleArea}>
+                    <View style={[styles.grabber, { backgroundColor: colors.border }]} />
+                  </View>
+                </GestureDetector>
+              )}
+              {children}
+            </Animated.View>
+          );
+          return dragFromAnywhere ? (
+            <GestureDetector gesture={pan}>{sheet}</GestureDetector>
+          ) : (
+            sheet
+          );
+        })()}
       </GestureHandlerRootView>
     </Modal>
   );
@@ -129,6 +147,12 @@ const styles = StyleSheet.create({
     maxWidth: 560,
     width: '100%',
     alignSelf: 'center',
+  },
+  handleArea: {
+    alignSelf: 'stretch',
+    minHeight: 44,
+    justifyContent: 'center',
+    marginTop: -spacing.sm,
   },
   grabber: {
     alignSelf: 'center',

@@ -1,5 +1,4 @@
 import type {
-  Achievement,
   BodyEntry,
   Exercise,
   BookingState,
@@ -7,20 +6,21 @@ import type {
   Member,
   Membership,
   MembershipPlan,
-  PersonalRecord,
   ScheduleEntry,
   SessionState,
   Trainer,
-  WorkoutLogEntry,
   WorkoutPlan,
+  WorkoutSession,
 } from '../types';
 
+import { evaluateAchievements } from '../rules/achievements';
 import { buildBookingState, workoutSchedule } from './bookings';
 import { classTemplates } from './classes';
 import { exercises } from './exercises';
 import { buildMember, initialSession } from './member';
 import { buildMembership, membershipPlans, workoutPlans } from './plans';
-import { achievements, buildBodyEntries, buildPersonalRecords, buildWorkoutLog } from './progress';
+import { generateSeedHistory } from './history';
+import { buildBodyEntries } from './progress';
 import { trainers } from './trainers';
 
 export interface SeedData {
@@ -35,9 +35,14 @@ export interface SeedData {
   membershipPlans: MembershipPlan[];
   membership: Membership;
   bodyEntries: BodyEntry[];
-  personalRecords: PersonalRecord[];
-  achievements: Achievement[];
-  workoutLog: WorkoutLogEntry[];
+  /** Workouts the member did in this demo. The older history is generated at runtime. */
+  userSessions: WorkoutSession[];
+  unlockedAchievements: Record<string, string>;
+}
+
+function initialUnlocks(now: Date): Record<string, string> {
+  const { newlyUnlocked } = evaluateAchievements(generateSeedHistory(now, workoutPlans), now, {});
+  return Object.fromEntries(newlyUnlocked.map((id) => [id, now.toISOString()]));
 }
 
 /** All fictional. Dates are computed from `now` so the demo always feels current. */
@@ -50,12 +55,11 @@ export function buildSeed(now: Date): SeedData {
     exercises,
     workoutPlans,
     workoutSchedule,
-    bookingState: buildBookingState(now, classTemplates),
+    bookingState: buildBookingState(),
     membershipPlans,
     membership: buildMembership(now),
     bodyEntries: buildBodyEntries(now),
-    personalRecords: buildPersonalRecords(now),
-    achievements,
-    workoutLog: buildWorkoutLog(now, workoutPlans),
+    userSessions: [],
+    unlockedAchievements: initialUnlocks(now),
   };
 }

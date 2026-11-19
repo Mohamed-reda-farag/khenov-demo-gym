@@ -33,3 +33,11 @@ export async function writeCollection<K extends CollectionKey>(
   await delay(latency[0], latency[1]);
   await demoStorage.set(key, value);
 }
+
+/** Read-modify-write on stored data must never interleave. Tasks run one after another. */
+let queue: Promise<unknown> = Promise.resolve();
+export function serial<T>(task: () => Promise<T>): Promise<T> {
+  const run = queue.then(task);
+  queue = run.catch(() => undefined);
+  return run;
+}

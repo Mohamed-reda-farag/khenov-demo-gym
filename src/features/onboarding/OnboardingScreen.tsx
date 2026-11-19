@@ -105,7 +105,7 @@ export function OnboardingScreen() {
       </View>
 
       <GestureDetector gesture={pan}>
-        <View style={styles.stage} accessibilityLiveRegion="polite">
+        <View style={styles.stage} aria-live="polite">
           {SLIDES.map((slide, i) => (
             <Slide
               key={slide.key}

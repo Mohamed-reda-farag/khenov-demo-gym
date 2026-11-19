@@ -15,10 +15,15 @@ import {
   classRepository,
   memberRepository,
   onBookingsChanged,
+  onWorkoutChanged,
+  progressRepository,
   workoutPlanRepository,
+  workoutSessionRepository,
 } from '@/data/repository';
 import type { ClassSessionView, Member, WorkoutPlan } from '@/data/types';
 import { useBookingActions, type ActionHandlers } from '@/features/classes/useBookingActions';
+import { ResumeBanner } from '@/features/workout/ResumeBanner';
+import { useStartSession } from '@/features/workout/useStartSession';
 import { useLanguage } from '@/i18n';
 import { useFormat } from '@/lib/format';
 import { useAsyncResource } from '@/lib/useAsyncResource';
@@ -32,15 +37,19 @@ interface HomeData {
   member: Member;
   plan: WorkoutPlan | null;
   upcoming: ClassSessionView[];
+  streak: number;
+  hasActiveSession: boolean;
 }
 
 async function loadHome(): Promise<HomeData> {
-  const [member, plan, upcoming] = await Promise.all([
+  const [member, plan, upcoming, streak, active] = await Promise.all([
     memberRepository.get(),
     workoutPlanRepository.getForToday(),
     classRepository.listUpcomingBooked(),
+    progressRepository.getStreak(),
+    workoutSessionRepository.getActive(),
   ]);
-  return { member, plan, upcoming };
+  return { member, plan, upcoming, streak, hasActiveSession: active !== null };
 }
 
 function greetingKey(hour: number): 'morning' | 'afternoon' | 'evening' {
@@ -61,6 +70,7 @@ export function HomeScreen() {
   const { state, reload, refresh } = useAsyncResource(loadHome);
 
   useEffect(() => onBookingsChanged(refresh), [refresh]);
+  useEffect(() => onWorkoutChanged(refresh), [refresh]);
 
   return (
     <Screen scroll withTabBar>
@@ -79,6 +89,7 @@ function HomeContent({ data }: { data: HomeData }) {
   const language = useLanguage();
   const format = useFormat();
   const actions = useBookingActions();
+  const workout = useStartSession();
   const [hidden, setHidden] = useState<readonly string[]>([]);
 
   const name = data.member.name[language];
@@ -98,6 +109,10 @@ function HomeContent({ data }: { data: HomeData }) {
   );
   const goClasses = useCallback(() => router.navigate('/classes'), [router]);
   const goWorkout = useCallback(() => router.navigate('/workout'), [router]);
+  const startToday = useCallback(() => {
+    if (data.hasActiveSession) router.push('/session');
+    else if (data.plan) void workout.start(data.plan.id);
+  }, [data.hasActiveSession, data.plan, router, workout]);
 
   return (
     <>
@@ -127,8 +142,8 @@ function HomeContent({ data }: { data: HomeData }) {
           </Text>
           <Text variant="title">
             {t('home.streakDays', {
-              count: data.member.streakDays,
-              countText: format.number(data.member.streakDays),
+              count: data.streak,
+              countText: format.number(data.streak),
             })}
           </Text>
           <Text variant="small" color="muted">
@@ -137,7 +152,15 @@ function HomeContent({ data }: { data: HomeData }) {
         </View>
       </Card>
 
-      <TodayPlanCard plan={data.plan} onStart={goWorkout} onBrowseClasses={goClasses} />
+      <ResumeBanner />
+
+      <TodayPlanCard
+        plan={data.plan}
+        resume={data.hasActiveSession}
+        busy={workout.busy}
+        onStart={startToday}
+        onBrowseClasses={goClasses}
+      />
 
       <NextClassCard
         next={next}

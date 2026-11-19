@@ -82,20 +82,6 @@
       "soon": "Soon"
     }
   },
-  "pending": {
-    "classes": {
-      "title": "This week's classes",
-      "body": "The class schedule with filters, booking and waitlist will appear here."
-    },
-    "workout": {
-      "title": "Workout session",
-      "body": "Pick a plan and start a session, logging each set with a rest timer."
-    },
-    "progress": {
-      "title": "Your progress",
-      "body": "Charts for your weight, measurements and personal records in one place."
-    }
-  },
   "profile": {
     "title": "Profile",
     "memberSince": "Member since {{date}}",
@@ -133,7 +119,13 @@
     "years_one": "{{countText}} year",
     "years_other": "{{countText}} years",
     "filters_one": "{{countText}} filter",
-    "filters_other": "{{countText}} filters"
+    "filters_other": "{{countText}} filters",
+    "sets_one": "{{countText}} set",
+    "sets_other": "{{countText}} sets",
+    "sessions_one": "{{countText}} session",
+    "sessions_other": "{{countText}} sessions",
+    "results_one": "{{countText}} result",
+    "results_other": "{{countText}} results"
   },
   "classes": {
     "title": "Classes",
@@ -248,7 +240,8 @@
     "bookingUndone": "Booking cancelled",
     "waitlistJoined": "You are on the waitlist. Your spot is {{positionText}}",
     "waitlistLeft": "You left the waitlist",
-    "promoted": "A spot opened up! You're confirmed for {{name}}"
+    "promoted": "A spot opened up! You're confirmed for {{name}}",
+    "achievement": "New achievement: {{title}}"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -264,6 +257,275 @@
       "not_waitlisted": "You are not on the waitlist.",
       "cutoff_passed": "Bookings can't be cancelled less than two hours before the class.",
       "undo_unavailable": "The undo time has passed."
+    },
+    "workout": {
+      "invalid_weight": "Weight must be between 0 and 500 kg.",
+      "invalid_reps": "Reps must be a whole number from 1 to 100.",
+      "invalid_set_count": "This action isn't possible for this set.",
+      "no_sets": "Log at least one set before saving.",
+      "no_active_session": "There is no session in progress.",
+      "session_in_progress": "You already have a session in progress. Finish or discard it first.",
+      "plan_not_found": "We couldn't find that plan.",
+      "session_not_found": "We couldn't find that session."
+    },
+    "body": {
+      "invalid_weightKg": "Weight must be between 30 and 300 kg.",
+      "invalid_waistCm": "Waist must be between 40 and 250 cm.",
+      "invalid_chestCm": "Chest must be between 50 and 250 cm.",
+      "invalid_armCm": "Arm must be between 15 and 80 cm.",
+      "invalid_date": "The date is not valid.",
+      "not_found": "We couldn't find that measurement."
+    }
+  },
+  "workout": {
+    "title": "Workout",
+    "subtitle": "Pick your plan and start a session",
+    "today": {
+      "title": "Today's workout",
+      "restTitle": "Today is a rest day",
+      "restBody": "You can still pick any plan and start a session whenever you like.",
+      "start": "Start session",
+      "other": "Pick another plan for today"
+    },
+    "plans": {
+      "title": "Workout plans",
+      "meta": "{{exercises}} · {{minutes}}",
+      "scheduled": "Scheduled: {{days}}",
+      "notScheduled": "Not scheduled"
+    },
+    "planDetail": {
+      "title": "Plan details",
+      "days": "Plan days",
+      "noDays": "Not in your weekly schedule",
+      "exercises": "Exercises",
+      "setsReps": "{{sets}} × {{reps}}",
+      "rest": "Rest {{time}}",
+      "estimated": "Estimated time",
+      "start": "Start session",
+      "blocked": "You have a session in progress. Finish or discard it first.",
+      "notFoundTitle": "We couldn't find this plan",
+      "notFoundBody": "Go back to Workout and pick another plan."
+    },
+    "resume": {
+      "title": "Session in progress",
+      "body": "{{plan}} · {{progress}}",
+      "resume": "Resume",
+      "discard": "Discard",
+      "discardTitle": "Discard the session in progress?",
+      "discardBody": "The sets you logged will not be saved.",
+      "discardConfirm": "Yes, discard"
+    },
+    "recent": {
+      "title": "Recent sessions",
+      "emptyTitle": "No sessions yet",
+      "emptyBody": "Start your first session and it will show up here.",
+      "partial": "Partial",
+      "item": "{{sets}} · {{volume}}"
+    },
+    "library": {
+      "open": "Exercise library",
+      "openBody": "Browse exercises, search and filter by muscle",
+      "title": "Exercise library",
+      "search": "Search for an exercise",
+      "searchLabel": "Search exercises",
+      "all": "All",
+      "emptyTitle": "No matching exercises",
+      "emptyBody": "Try another word or a different muscle group.",
+      "clear": "Clear search and filter",
+      "filterLabel": "Muscle group"
+    },
+    "muscle": {
+      "chest": "Chest",
+      "back": "Back",
+      "legs": "Legs",
+      "shoulders": "Shoulders",
+      "arms": "Arms",
+      "core": "Core",
+      "full_body": "Full body"
+    },
+    "equipment": {
+      "barbell": "Barbell",
+      "dumbbell": "Dumbbell",
+      "machine": "Machine",
+      "cable": "Cable",
+      "bodyweight": "Bodyweight",
+      "cardio": "Cardio",
+      "kettlebell": "Kettlebell"
+    },
+    "exercise": {
+      "title": "Exercise",
+      "history": "Your history with this exercise",
+      "heaviest": "Best set",
+      "lastTime": "Last time",
+      "chartTitle": "Best weight in each session",
+      "emptyTitle": "You haven't logged this exercise yet",
+      "emptyBody": "The first session that includes it will appear here.",
+      "notFoundTitle": "We couldn't find this exercise",
+      "notFoundBody": "Go back to the library and pick another one."
+    },
+    "session": {
+      "title": "Session",
+      "exerciseOf": "Exercise {{current}} of {{total}}",
+      "target": "Target: {{sets}} × {{reps}}",
+      "last": "Last time: {{weight}} × {{reps}}",
+      "noLast": "First time you do this exercise",
+      "setN": "Set {{current}} of {{total}}",
+      "weight": "Weight",
+      "reps": "Reps",
+      "completeSet": "Complete set {{number}}",
+      "sameAsLast": "Same as last time",
+      "addSet": "Add a set",
+      "skipSet": "Skip a set",
+      "allDone": "You finished every set of this exercise",
+      "next": "Next exercise",
+      "previous": "Previous",
+      "finish": "Finish session",
+      "list": {
+        "title": "Exercises",
+        "done": "{{done}} of {{total}}",
+        "current": "Current",
+        "jump": "Go to {{name}}"
+      },
+      "close": "Exit",
+      "setDone": "Set {{number}} logged",
+      "setUndone": "Set removed",
+      "loggedSets": "Logged sets",
+      "setChip": "Set {{number}}: {{weight}} × {{reps}}",
+      "decWeight": "Decrease weight",
+      "incWeight": "Increase weight",
+      "decReps": "Decrease reps",
+      "incReps": "Increase reps",
+      "weightValue": "Weight: {{value}}",
+      "repsValue": "Reps: {{value}}",
+      "elapsed": "Session time",
+      "progress": "{{done}} of {{total}} sets",
+      "rest": {
+        "title": "Rest",
+        "add": "+15 s",
+        "sub": "−15 s",
+        "addLabel": "Add 15 seconds",
+        "subLabel": "Remove 15 seconds",
+        "skip": "Skip rest",
+        "pause": "Pause",
+        "resume": "Resume",
+        "paused": "Paused",
+        "over": "Rest is over. Ready for the next set!",
+        "announceStart": "Rest started, {{time}}",
+        "announceTen": "Ten seconds left",
+        "announceDone": "Rest is over",
+        "timeLabel": "{{time}} left"
+      },
+      "quit": {
+        "title": "End the session?",
+        "body": "You haven't finished every planned set. You can save what you did or discard the session.",
+        "save": "Save what I did",
+        "discard": "Discard session",
+        "continue": "Keep training",
+        "noSets": "You haven't logged any set yet, so there is nothing to save."
+      },
+      "emptyTitle": "No session in progress",
+      "emptyBody": "Start a session from the Workout tab.",
+      "emptyCta": "Go to Workout",
+      "listLabel": "Exercise list"
+    },
+    "summary": {
+      "title": "Session summary",
+      "great": "Well done!",
+      "greatBody": "You finished your session and it is saved in your history.",
+      "partialTitle": "Your session is saved",
+      "partialBody": "We saved what you did. You can finish the rest next time.",
+      "duration": "Time",
+      "volume": "Total volume",
+      "sets": "Sets",
+      "exercises": "Exercises",
+      "prs": "New personal records",
+      "prLine": "Was {{previous}}, now {{current}}",
+      "noPrs": "No records this time, but you are building strength session by session.",
+      "streak": "Streak: {{days}}",
+      "achievements": "New achievements",
+      "done": "Done",
+      "viewProgress": "View my progress",
+      "notFoundTitle": "We couldn't find this session",
+      "notFoundBody": "It may have been removed by resetting the demo."
+    }
+  },
+  "progress": {
+    "title": "Your progress",
+    "subtitle": "Your weight, measurements and personal records",
+    "range": {
+      "label": "Period",
+      "4w": "4 weeks",
+      "8w": "8 weeks",
+      "all": "All"
+    },
+    "weight": {
+      "title": "Weight",
+      "add": "Add measurement",
+      "emptyTitle": "No measurements yet",
+      "emptyBody": "Log your first weight to start charting your progress.",
+      "noneInRange": "No measurements in this period. Choose a longer one."
+    },
+    "measure": {
+      "title": "Measurements",
+      "waistCm": "Waist",
+      "chestCm": "Chest",
+      "armCm": "Arm",
+      "select": "Choose a measurement"
+    },
+    "volume": {
+      "title": "Weekly training volume",
+      "subtitle": "Total weight lifted each week",
+      "emptyTitle": "No sessions in this period",
+      "emptyBody": "Complete a session and its volume will show here.",
+      "weekOf": "Week of {{date}}",
+      "axisUnit": "The axis is in tons; the tooltip shows kilograms."
+    },
+    "chart": {
+      "summary": "Latest {{latest}} · Lowest {{min}} · Highest {{max}}",
+      "trendUp": "Up {{delta}} over the period",
+      "trendDown": "Down {{delta}} over the period",
+      "trendFlat": "About the same over the period",
+      "hint": "Touch the chart to see values",
+      "a11y": "{{title}}. {{trend}}. {{summary}}."
+    },
+    "history": {
+      "title": "Measurement history",
+      "edit": "Edit measurement of {{date}}",
+      "delete": "Delete measurement of {{date}}",
+      "row": "{{weight}} · waist {{waist}}"
+    },
+    "entry": {
+      "addTitle": "Add measurement",
+      "editTitle": "Edit measurement",
+      "date": "Date: {{date}}",
+      "save": "Save",
+      "weightKg": "Weight",
+      "waistCm": "Waist",
+      "chestCm": "Chest",
+      "armCm": "Arm",
+      "dec": "Decrease {{label}}",
+      "inc": "Increase {{label}}",
+      "value": "{{label}}: {{value}}"
+    },
+    "toast": {
+      "added": "Measurement added",
+      "updated": "Measurement updated",
+      "deleted": "Measurement deleted",
+      "restored": "Measurement restored"
+    },
+    "records": {
+      "title": "Personal records",
+      "emptyTitle": "No records yet",
+      "emptyBody": "Complete sessions and your best set for each exercise will show here.",
+      "line": "{{weight}} × {{reps}}",
+      "showAll": "Show all",
+      "showLess": "Show less"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "unlocked": "Unlocked",
+      "locked": "Locked",
+      "progress": "{{progress}} of {{target}}"
     }
   }
 }

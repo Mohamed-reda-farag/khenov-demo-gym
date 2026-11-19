@@ -86,20 +86,6 @@
       "soon": "قريبًا"
     }
   },
-  "pending": {
-    "classes": {
-      "title": "حصص الأسبوع",
-      "body": "سيظهر هنا جدول الحصص مع الفلاتر والحجز وقائمة الانتظار."
-    },
-    "workout": {
-      "title": "جلسة التمرين",
-      "body": "اختر خطة وابدأ الجلسة، وسجّل كل جولة مع مؤقت الراحة."
-    },
-    "progress": {
-      "title": "تقدمك",
-      "body": "رسوم بيانية لوزنك وقياساتك وأرقامك القياسية في مكان واحد."
-    }
-  },
   "profile": {
     "title": "حسابي",
     "memberSince": "عضو منذ {{date}}",
@@ -165,7 +151,25 @@
     "filters_two": "فلتران",
     "filters_few": "{{countText}} فلاتر",
     "filters_many": "{{countText}} فلترًا",
-    "filters_other": "{{countText}} فلتر"
+    "filters_other": "{{countText}} فلتر",
+    "sets_zero": "لا جولات",
+    "sets_one": "جولة واحدة",
+    "sets_two": "جولتان",
+    "sets_few": "{{countText}} جولات",
+    "sets_many": "{{countText}} جولة",
+    "sets_other": "{{countText}} جولة",
+    "sessions_zero": "لا جلسات",
+    "sessions_one": "جلسة واحدة",
+    "sessions_two": "جلستان",
+    "sessions_few": "{{countText}} جلسات",
+    "sessions_many": "{{countText}} جلسة",
+    "sessions_other": "{{countText}} جلسة",
+    "results_zero": "لا نتائج",
+    "results_one": "نتيجة واحدة",
+    "results_two": "نتيجتان",
+    "results_few": "{{countText}} نتائج",
+    "results_many": "{{countText}} نتيجة",
+    "results_other": "{{countText}} نتيجة"
   },
   "classes": {
     "title": "الحصص",
@@ -280,7 +284,8 @@
     "bookingUndone": "تم إلغاء الحجز",
     "waitlistJoined": "أنت في قائمة الانتظار. رقمك {{positionText}}",
     "waitlistLeft": "غادرت قائمة الانتظار",
-    "promoted": "توفر مكان! تم تأكيد حجزك في {{name}}"
+    "promoted": "توفر مكان! تم تأكيد حجزك في {{name}}",
+    "achievement": "إنجاز جديد: {{title}}"
   },
   "errors": {
     "generic": "حدث خطأ غير متوقع. حاول مرة أخرى.",
@@ -296,6 +301,275 @@
       "not_waitlisted": "لست في قائمة الانتظار.",
       "cutoff_passed": "لا يمكن الإلغاء قبل بدء الحصة بأقل من ساعتين.",
       "undo_unavailable": "انتهت مهلة التراجع."
+    },
+    "workout": {
+      "invalid_weight": "الوزن يجب أن يكون بين ٠ و٥٠٠ كجم.",
+      "invalid_reps": "التكرارات عدد صحيح من ١ إلى ١٠٠.",
+      "invalid_set_count": "لا يمكن تنفيذ هذا الإجراء على هذه الجولة.",
+      "no_sets": "سجّل جولة واحدة على الأقل قبل الحفظ.",
+      "no_active_session": "لا توجد جلسة جارية.",
+      "session_in_progress": "لديك جلسة جارية بالفعل. أكملها أو تجاهلها أولًا.",
+      "plan_not_found": "تعذر العثور على الخطة.",
+      "session_not_found": "تعذر العثور على هذه الجلسة."
+    },
+    "body": {
+      "invalid_weightKg": "الوزن يجب أن يكون بين ٣٠ و٣٠٠ كجم.",
+      "invalid_waistCm": "الخصر يجب أن يكون بين ٤٠ و٢٥٠ سم.",
+      "invalid_chestCm": "الصدر يجب أن يكون بين ٥٠ و٢٥٠ سم.",
+      "invalid_armCm": "الذراع يجب أن يكون بين ١٥ و٨٠ سم.",
+      "invalid_date": "التاريخ غير صالح.",
+      "not_found": "تعذر العثور على هذا القياس."
+    }
+  },
+  "workout": {
+    "title": "التمرين",
+    "subtitle": "اختر خطتك وابدأ جلسة",
+    "today": {
+      "title": "تمرين اليوم",
+      "restTitle": "اليوم يوم راحة",
+      "restBody": "يمكنك اختيار أي خطة وبدء جلسة متى شئت.",
+      "start": "ابدأ الجلسة",
+      "other": "اختر خطة أخرى لليوم"
+    },
+    "plans": {
+      "title": "خطط التمرين",
+      "meta": "{{exercises}} · {{minutes}}",
+      "scheduled": "مجدولة: {{days}}",
+      "notScheduled": "غير مجدولة"
+    },
+    "planDetail": {
+      "title": "تفاصيل الخطة",
+      "days": "أيام الخطة",
+      "noDays": "ليست ضمن جدولك الأسبوعي",
+      "exercises": "التمارين",
+      "setsReps": "{{sets}} × {{reps}}",
+      "rest": "راحة {{time}}",
+      "estimated": "المدة التقديرية",
+      "start": "ابدأ الجلسة",
+      "blocked": "لديك جلسة جارية. أكملها أو تجاهلها أولًا.",
+      "notFoundTitle": "لم نجد هذه الخطة",
+      "notFoundBody": "عد إلى التمرين واختر خطة أخرى."
+    },
+    "resume": {
+      "title": "جلسة جارية",
+      "body": "{{plan}} · {{progress}}",
+      "resume": "متابعة",
+      "discard": "تجاهل",
+      "discardTitle": "تجاهل الجلسة الجارية؟",
+      "discardBody": "لن تُحفظ الجولات التي سجّلتها.",
+      "discardConfirm": "نعم، تجاهل"
+    },
+    "recent": {
+      "title": "آخر الجلسات",
+      "emptyTitle": "لا جلسات بعد",
+      "emptyBody": "ابدأ أول جلسة وستظهر هنا.",
+      "partial": "جزئية",
+      "item": "{{sets}} · {{volume}}"
+    },
+    "library": {
+      "open": "مكتبة التمارين",
+      "openBody": "استعرض التمارين وابحث وصفِّ حسب العضلة",
+      "title": "مكتبة التمارين",
+      "search": "ابحث عن تمرين",
+      "searchLabel": "بحث في التمارين",
+      "all": "الكل",
+      "emptyTitle": "لا توجد تمارين مطابقة",
+      "emptyBody": "جرّب كلمة أخرى أو مجموعة عضلية مختلفة.",
+      "clear": "مسح البحث والتصفية",
+      "filterLabel": "المجموعة العضلية"
+    },
+    "muscle": {
+      "chest": "صدر",
+      "back": "ظهر",
+      "legs": "أرجل",
+      "shoulders": "أكتاف",
+      "arms": "ذراعان",
+      "core": "بطن وجذع",
+      "full_body": "الجسم كله"
+    },
+    "equipment": {
+      "barbell": "بار",
+      "dumbbell": "دمبل",
+      "machine": "جهاز",
+      "cable": "كابل",
+      "bodyweight": "وزن الجسم",
+      "cardio": "كارديو",
+      "kettlebell": "كيتل بيل"
+    },
+    "exercise": {
+      "title": "التمرين",
+      "history": "سجلك مع هذا التمرين",
+      "heaviest": "أفضل جولة",
+      "lastTime": "آخر مرة",
+      "chartTitle": "أفضل وزن في كل جلسة",
+      "emptyTitle": "لم تسجّل هذا التمرين بعد",
+      "emptyBody": "أول جلسة تضم هذا التمرين ستظهر هنا.",
+      "notFoundTitle": "لم نجد هذا التمرين",
+      "notFoundBody": "عد إلى المكتبة واختر تمرينًا آخر."
+    },
+    "session": {
+      "title": "الجلسة",
+      "exerciseOf": "التمرين {{current}} من {{total}}",
+      "target": "الهدف: {{sets}} × {{reps}}",
+      "last": "آخر مرة: {{weight}} × {{reps}}",
+      "noLast": "أول مرة لك مع هذا التمرين",
+      "setN": "الجولة {{current}} من {{total}}",
+      "weight": "الوزن",
+      "reps": "التكرارات",
+      "completeSet": "إتمام الجولة {{number}}",
+      "sameAsLast": "مثل المرة الماضية",
+      "addSet": "إضافة جولة",
+      "skipSet": "تخطي جولة",
+      "allDone": "أنهيت كل جولات هذا التمرين",
+      "next": "التمرين التالي",
+      "previous": "السابق",
+      "finish": "إنهاء الجلسة",
+      "list": {
+        "title": "التمارين",
+        "done": "{{done}} من {{total}}",
+        "current": "الحالي",
+        "jump": "انتقل إلى {{name}}"
+      },
+      "close": "خروج",
+      "setDone": "تم تسجيل الجولة {{number}}",
+      "setUndone": "تم التراجع عن الجولة",
+      "loggedSets": "الجولات المسجلة",
+      "setChip": "الجولة {{number}}: {{weight}} × {{reps}}",
+      "decWeight": "تقليل الوزن",
+      "incWeight": "زيادة الوزن",
+      "decReps": "تقليل التكرارات",
+      "incReps": "زيادة التكرارات",
+      "weightValue": "الوزن: {{value}}",
+      "repsValue": "التكرارات: {{value}}",
+      "elapsed": "مدة الجلسة",
+      "progress": "{{done}} من {{total}} جولة",
+      "rest": {
+        "title": "راحة",
+        "add": "+١٥ ث",
+        "sub": "−١٥ ث",
+        "addLabel": "زيادة ١٥ ثانية",
+        "subLabel": "تقليل ١٥ ثانية",
+        "skip": "تخطي الراحة",
+        "pause": "إيقاف مؤقت",
+        "resume": "استئناف",
+        "paused": "متوقفة مؤقتًا",
+        "over": "انتهت الراحة. جاهز للجولة التالية!",
+        "announceStart": "بدأت الراحة، {{time}}",
+        "announceTen": "متبقي عشر ثوانٍ",
+        "announceDone": "انتهت الراحة",
+        "timeLabel": "المتبقي {{time}}"
+      },
+      "quit": {
+        "title": "إنهاء الجلسة؟",
+        "body": "لم تكمل كل الجولات المخططة. يمكنك حفظ ما أنجزته أو تجاهل الجلسة.",
+        "save": "حفظ ما أنجزته",
+        "discard": "تجاهل الجلسة",
+        "continue": "متابعة التمرين",
+        "noSets": "لم تسجّل أي جولة بعد، لذلك لا يمكن حفظ الجلسة."
+      },
+      "emptyTitle": "لا توجد جلسة جارية",
+      "emptyBody": "ابدأ جلسة من تبويب التمرين.",
+      "emptyCta": "إلى التمرين",
+      "listLabel": "قائمة التمارين"
+    },
+    "summary": {
+      "title": "ملخص الجلسة",
+      "great": "أحسنت!",
+      "greatBody": "أنهيت جلستك وحُفظت في سجلك.",
+      "partialTitle": "تم حفظ جلستك",
+      "partialBody": "حفظنا ما أنجزته، وتكمل الباقي في المرة القادمة.",
+      "duration": "المدة",
+      "volume": "الحجم الكلي",
+      "sets": "الجولات",
+      "exercises": "التمارين",
+      "prs": "أرقام قياسية جديدة",
+      "prLine": "كان {{previous}} وأصبح {{current}}",
+      "noPrs": "لا أرقام قياسية هذه المرة، لكنك تبني القوة جلسة بعد جلسة.",
+      "streak": "سلسلة الالتزام: {{days}}",
+      "achievements": "إنجازات جديدة",
+      "done": "تم",
+      "viewProgress": "عرض تقدمي",
+      "notFoundTitle": "لم نجد هذه الجلسة",
+      "notFoundBody": "قد تكون حُذفت بعد إعادة ضبط العرض."
+    }
+  },
+  "progress": {
+    "title": "تقدمك",
+    "subtitle": "وزنك وقياساتك وأرقامك القياسية",
+    "range": {
+      "label": "الفترة",
+      "4w": "٤ أسابيع",
+      "8w": "٨ أسابيع",
+      "all": "الكل"
+    },
+    "weight": {
+      "title": "الوزن",
+      "add": "إضافة قياس",
+      "emptyTitle": "لا توجد قياسات بعد",
+      "emptyBody": "سجّل وزنك الأول لتبدأ رسم تقدمك.",
+      "noneInRange": "لا قياسات في هذه الفترة. اختر فترة أطول."
+    },
+    "measure": {
+      "title": "القياسات",
+      "waistCm": "الخصر",
+      "chestCm": "الصدر",
+      "armCm": "الذراع",
+      "select": "اختر القياس"
+    },
+    "volume": {
+      "title": "حجم التمرين الأسبوعي",
+      "subtitle": "إجمالي الوزن المرفوع في كل أسبوع",
+      "emptyTitle": "لا جلسات في هذه الفترة",
+      "emptyBody": "أكمل جلسة وسيظهر حجمها هنا.",
+      "weekOf": "أسبوع {{date}}",
+      "axisUnit": "المحور بالطن، والأرقام داخل الشرح بالكيلوجرام."
+    },
+    "chart": {
+      "summary": "الأحدث {{latest}} · الأدنى {{min}} · الأعلى {{max}}",
+      "trendUp": "ارتفاع بمقدار {{delta}} خلال الفترة",
+      "trendDown": "انخفاض بمقدار {{delta}} خلال الفترة",
+      "trendFlat": "ثابت تقريبًا خلال الفترة",
+      "hint": "المس الرسم لرؤية القيم",
+      "a11y": "{{title}}. {{trend}}. {{summary}}."
+    },
+    "history": {
+      "title": "سجل القياسات",
+      "edit": "تعديل قياس {{date}}",
+      "delete": "حذف قياس {{date}}",
+      "row": "{{weight}} · خصر {{waist}}"
+    },
+    "entry": {
+      "addTitle": "إضافة قياس",
+      "editTitle": "تعديل القياس",
+      "date": "التاريخ: {{date}}",
+      "save": "حفظ",
+      "weightKg": "الوزن",
+      "waistCm": "الخصر",
+      "chestCm": "الصدر",
+      "armCm": "الذراع",
+      "dec": "تقليل {{label}}",
+      "inc": "زيادة {{label}}",
+      "value": "{{label}}: {{value}}"
+    },
+    "toast": {
+      "added": "تمت إضافة القياس",
+      "updated": "تم تحديث القياس",
+      "deleted": "تم حذف القياس",
+      "restored": "تمت استعادة القياس"
+    },
+    "records": {
+      "title": "الأرقام القياسية",
+      "emptyTitle": "لا أرقام قياسية بعد",
+      "emptyBody": "أكمل جلسات وستظهر أفضل جولة لكل تمرين هنا.",
+      "line": "{{weight}} × {{reps}}",
+      "showAll": "عرض الكل",
+      "showLess": "عرض أقل"
+    },
+    "achievements": {
+      "title": "الإنجازات",
+      "unlocked": "مفتوح",
+      "locked": "مغلق",
+      "progress": "{{progress}} من {{target}}"
     }
   }
 }

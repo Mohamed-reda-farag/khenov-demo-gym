@@ -13,3 +13,17 @@ export function onBookingsChanged(listener: Listener): () => void {
 export function emitBookingsChanged(): void {
   listeners.forEach((listener) => listener());
 }
+
+const workoutListeners = new Set<Listener>();
+
+/** Fires when a workout starts, ends or is discarded, so Home and Workout can refresh. */
+export function onWorkoutChanged(listener: Listener): () => void {
+  workoutListeners.add(listener);
+  return () => {
+    workoutListeners.delete(listener);
+  };
+}
+
+export function emitWorkoutChanged(): void {
+  workoutListeners.forEach((listener) => listener());
+}

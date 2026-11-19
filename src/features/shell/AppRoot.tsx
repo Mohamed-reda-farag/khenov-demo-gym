@@ -50,6 +50,20 @@ function AppShell() {
             }}
           >
             <Stack.Screen name="class/[sessionId]" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="plan/[planId]" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen
+              name="session"
+              options={{ animation: 'slide_from_bottom', gestureEnabled: false }}
+            />
+            <Stack.Screen
+              name="summary/[sessionId]"
+              options={{ animation: 'fade', gestureEnabled: false }}
+            />
+            <Stack.Screen name="exercises/index" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen
+              name="exercises/[exerciseId]"
+              options={{ animation: 'slide_from_bottom' }}
+            />
           </Stack>
         </ToastProvider>
       </View>

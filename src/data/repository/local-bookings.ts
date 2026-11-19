@@ -10,6 +10,7 @@ import {
   applyUndoBook,
   applyUndoCancel,
   BookingError,
+  syncDemoBookings,
   toSessionView,
   type RuleContext,
 } from '../rules/booking';
@@ -18,7 +19,7 @@ import type { BookingState, ClassSessionView, ClassTemplate, Trainer } from '../
 
 import { emitBookingsChanged } from './events';
 import type { BookingRepository, ClassRepository } from './interfaces';
-import { readCollection, writeCollection } from './local-core';
+import { readCollection, serial, writeCollection } from './local-core';
 
 const QUICK = [0, 0] as const;
 const WAITLIST_DELAY_FAST_MS = 5_000;
@@ -36,7 +37,8 @@ async function load(): Promise<Loaded> {
     readCollection('trainers', QUICK),
     readCollection('bookingState', QUICK),
   ]);
-  return { templates, trainers, state, now: new Date() };
+  const now = new Date();
+  return { templates, trainers, state: syncDemoBookings(state, { templates, now }), now };
 }
 
 const context = ({ templates, now }: Loaded): RuleContext => ({
@@ -50,14 +52,6 @@ function viewOf(loaded: Loaded, state: BookingState, sessionId: string): ClassSe
   const trainer = found && loaded.trainers.find((t) => t.id === found.template.trainerId);
   if (!found || !trainer) throw new BookingError('not_found');
   return toSessionView(found.template, trainer, found.timing, state, loaded.now);
-}
-
-/** Read-modify-write on one storage key must never interleave. */
-let queue: Promise<unknown> = Promise.resolve();
-function serial<T>(task: () => Promise<T>): Promise<T> {
-  const run = queue.then(task);
-  queue = run.catch(() => undefined);
-  return run;
 }
 
 async function mutate(

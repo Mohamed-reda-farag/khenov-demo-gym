@@ -14,7 +14,9 @@ export const COLLECTION_KEYS: readonly CollectionKey[] = [
   'membershipPlans',
   'membership',
   'bodyEntries',
-  'personalRecords',
-  'achievements',
-  'workoutLog',
+  'userSessions',
+  'unlockedAchievements',
 ];
+
+/** Stored on its own: absent when no workout is in progress, so it is not a seeded collection. */
+export const ACTIVE_SESSION_KEY = 'activeSession';
