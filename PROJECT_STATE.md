@@ -2,6 +2,8 @@
 
 Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 
+**Status:** M0 to M3 done, M4a (web hosting, README, repo hygiene) done. Next: M4b (Android APK, Portfolio Pack). Version 1.0.0. How to run, switches and deploy steps are in `README.md`.
+
 ## Done
 
 ### M0 Foundation
@@ -12,7 +14,7 @@ Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 - Demo kit (`src/lib/demo`): namespaced storage, `delay`, `resetDemo`, seed versioning, fast mode.
 - Seed: 1 member, 3 trainers, 12 weekly classes, 30 exercises, 3 workout plans, 3 membership plans, 8 weeks of body entries, 5 personal records, 5 achievements, 24 logged sessions.
 - Repositories (`src/data/repository`): session, member, trainers, classes, exercises, workout plans, membership, progress, prefs.
-- UI primitives (`src/components/ui`): Text, Icon, Logo, Button, Card, Screen, Skeleton, EmptyState, ErrorState, DemoBadge, SegmentedControl, BottomSheet, ConfirmSheet, PendingFeature.
+- UI primitives (`src/components/ui`): Text, Icon, Logo, Button, Card, Screen, Skeleton, EmptyState, ErrorState, DemoBadge, SegmentedControl, BottomSheet, ConfirmSheet (a placeholder component that existed here was removed in M1).
 - Flow: splash, 3-slide swipeable onboarding (skippable), "Continue as demo member", 5-tab shell, Home (greeting + streak from the repository, with skeleton and error states), Profile (language, theme, Reset demo).
 
 ### M0 fix 1
@@ -62,6 +64,16 @@ Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 - `?demo=empty` and `?demo=error` now reach every screen (see `docs/QUALITY.md`, which also holds the RTL audit, accessibility notes, contrast ratios and bundle sizes).
 - Fonts load per weight: 13 bundled files down to 5. Headings are real headings. Numeric fields align to the start edge in Arabic. Durations all come from tokens.
 
+### M4a Web hosting, README, hygiene
+
+- `npm run build:web` (`scripts/export-web.mjs`): static export into `dist/`, with Expo's `assets/node_modules` renamed to `assets/vendor` (some hosts skip `node_modules`) and a check that every referenced asset exists.
+- `public/`: `index.html` template (Arabic, right to left and dark before the app loads, `noindex`), `_headers` (noindex header, one year cache for hashed files), `robots.txt`. No `404.html` on purpose: Cloudflare Pages then serves `index.html` for unknown addresses.
+- `src/app/+not-found.tsx`: an intentional page for unknown addresses and bad deep links, in both languages.
+- Verified with a static server that mimics the host: `/`, a nested deep link, a link with a query string and an unknown address all return `index.html`; scripts, fonts and `robots.txt` load. Not verified: rendering in a real browser (check the four addresses listed in the M4a report by hand after deploying).
+- `app.json`: version 1.0.0 (the About card shows it), web title, description, theme colour and language.
+- `npm audit`: 3 moderate findings, one chain (`minimatch` via `@expo/fingerprint`, Expo build tooling, not shipped). The offered fix downgrades Expo, so it is not applied.
+- Hosting decision: Cloudflare Pages (free plan, root deployment, automatic single page fallback, header file). No account has been created yet.
+
 ## Demo switches
 
 Web: add `?demo=` with a comma list, for example `?demo=fast,expired`. Native (PowerShell): `$env:EXPO_PUBLIC_DEMO="expired"; npx expo start -c`.
@@ -74,8 +86,7 @@ Web: add `?demo=` with a comma list, for example `?demo=fast,expired`. Native (P
 
 ## Next
 
-- M4 Packaging: web export, APK through free EAS build (ask before creating any account), README, Portfolio Pack.
-- M3c: motion and gestures polish, RTL audit, accessibility pass, empty and error audit, performance and bundle report.
+- M4b: Android APK through a free EAS build (ask before creating any account), Portfolio Pack in `docs/portfolio/`.
 
 ## Decisions
 

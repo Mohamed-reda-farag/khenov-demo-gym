@@ -1,0 +1,3 @@
+# Portfolio demo with fictional data: not meant for search engines.
+User-agent: *
+Disallow: /

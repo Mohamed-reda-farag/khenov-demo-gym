@@ -2,7 +2,7 @@
   "expo": {
     "name": "Nabd Gym",
     "slug": "khenov-demo-gym",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "khenovdemogym",
@@ -20,7 +20,13 @@
     "web": {
       "output": "single",
       "bundler": "metro",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "Nabd Gym · Demo by KHENOV",
+      "shortName": "Nabd Gym",
+      "description": "Nabd Gym is a demo gym member app by KHENOV. All data is fictional. · تطبيق تجريبي لصالة رياضية من KHENOV، وكل بياناته وهمية.",
+      "themeColor": "#0E1116",
+      "lang": "ar",
+      "backgroundColor": "#0E1116"
     },
     "plugins": [
       "expo-router",
@@ -32,6 +38,7 @@
           "imageWidth": 160
         }
       ]
-    ]
+    ],
+    "description": "Nabd Gym is a demo gym member app by KHENOV. All data is fictional. · تطبيق تجريبي لصالة رياضية من KHENOV، وكل بياناته وهمية."
   }
 }
