@@ -3,7 +3,7 @@ import type { LayoutChangeEvent } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { Text } from '@/components/ui/Text';
-import { radius, shadow, spacing, useTheme } from '@/theme';
+import { pointer, radius, shadow, spacing, useTheme } from '@/theme';
 
 /** Width of the chart area, measured after layout. */
 export function useChartWidth() {
@@ -32,8 +32,8 @@ export function Tooltip({ x, top, chartWidth, value, caption }: TooltipProps) {
   const left = Math.max(0, Math.min(chartWidth - TOOLTIP_WIDTH, x - TOOLTIP_WIDTH / 2));
   return (
     <View
-      pointerEvents="none"
       style={[
+        pointer.none,
         styles.tooltip,
         {
           left,

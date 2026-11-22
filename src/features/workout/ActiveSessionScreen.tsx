@@ -245,7 +245,7 @@ function SessionBody({ initial, library, last, onLeave }: BodyProps) {
           <Icon icon={X} size={24} />
         </Pressable>
         <View style={styles.topCenter}>
-          <ElapsedTime startedAtMs={session.startedAtMs} />
+          <ElapsedTime session={session} />
           <Text variant="caption" color="muted">
             {t('workout.session.progress', {
               done: format.number(doneSets),

@@ -167,3 +167,8 @@ export function useFormat() {
     [language],
   );
 }
+
+/** Keeps codes and numbers (card numbers, references) in left-to-right order inside Arabic text. */
+export function ltrIsolate(text: string): string {
+  return `\u2066${text}\u2069`;
+}

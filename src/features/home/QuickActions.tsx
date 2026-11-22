@@ -10,9 +10,10 @@ import { layout, radius, spacing, useTheme } from '@/theme';
 interface Props {
   onBookClass: () => void;
   onStartWorkout: () => void;
+  onCheckIn: () => void;
 }
 
-export function QuickActions({ onBookClass, onStartWorkout }: Props) {
+export function QuickActions({ onBookClass, onStartWorkout, onCheckIn }: Props) {
   const { t } = useTranslation();
   return (
     <View style={styles.root}>
@@ -20,7 +21,7 @@ export function QuickActions({ onBookClass, onStartWorkout }: Props) {
       <View style={styles.row}>
         <Tile icon={CalendarDays} label={t('home.quick.bookClass')} onPress={onBookClass} />
         <Tile icon={Dumbbell} label={t('home.quick.startWorkout')} onPress={onStartWorkout} />
-        <Tile icon={QrCode} label={t('home.quick.checkIn')} badge={t('home.quick.soon')} />
+        <Tile icon={QrCode} label={t('home.quick.checkIn')} onPress={onCheckIn} />
       </View>
     </View>
   );
@@ -29,48 +30,34 @@ export function QuickActions({ onBookClass, onStartWorkout }: Props) {
 interface TileProps {
   icon: LucideIcon;
   label: string;
-  onPress?: () => void;
-  /** Present on a tile that is not available yet. */
-  badge?: string;
+  onPress: () => void;
 }
 
-function Tile({ icon, label, onPress, badge }: TileProps) {
+function Tile({ icon, label, onPress }: TileProps) {
   const { colors } = useTheme();
-  const disabled = !onPress;
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={badge ? `${label} (${badge})` : label}
-      accessibilityState={{ disabled }}
-      disabled={disabled}
+      accessibilityLabel={label}
       onPress={() => {
         haptics.tap();
-        onPress?.();
+        onPress();
       }}
       style={({ pressed }) => [
         styles.tile,
         {
           backgroundColor: colors.surface,
           borderColor: colors.border,
-          opacity: disabled ? 0.6 : pressed ? 0.85 : 1,
+          opacity: pressed ? 0.85 : 1,
         },
       ]}
     >
-      <View
-        style={[styles.icon, { backgroundColor: disabled ? colors.surfaceAlt : colors.accentSoft }]}
-      >
-        <Icon icon={icon} size={22} color={disabled ? 'textMuted' : 'accentText'} />
+      <View style={[styles.icon, { backgroundColor: colors.accentSoft }]}>
+        <Icon icon={icon} size={22} color="accentText" />
       </View>
       <Text variant="caption" align="center" numberOfLines={2}>
         {label}
       </Text>
-      {badge ? (
-        <View style={[styles.badge, { backgroundColor: colors.surfaceAlt }]}>
-          <Text variant="caption" color="secondary">
-            {badge}
-          </Text>
-        </View>
-      ) : null}
     </Pressable>
   );
 }
@@ -94,10 +81,5 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  badge: {
-    paddingHorizontal: spacing.xs,
-    paddingVertical: 2,
-    borderRadius: radius.pill,
   },
 });

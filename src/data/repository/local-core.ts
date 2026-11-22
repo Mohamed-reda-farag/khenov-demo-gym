@@ -1,4 +1,5 @@
 import { delay } from '@/lib/demo/delay';
+import { hasDemoFlag } from '@/lib/demo/flags';
 import { seedDemoData } from '@/lib/demo/seed';
 import { demoStorage } from '@/lib/demo/storage';
 
@@ -16,6 +17,8 @@ export async function readCollection<K extends CollectionKey>(
   latency: Latency = DEFAULT_LATENCY,
 ): Promise<SeedData[K]> {
   await delay(latency[0], latency[1]);
+  // `?demo=error`: every screen shows its error state. The session is spared so the app still opens.
+  if (key !== 'session' && hasDemoFlag('error')) throw new Error('Demo error mode');
   let value = await demoStorage.get<SeedData[K]>(key);
   if (value === null) {
     await seedDemoData();

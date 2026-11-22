@@ -39,9 +39,43 @@ Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 - Rules in `src/data/rules` with typed errors: set validation, volume, record detection, streak, achievements, rest timer, active session, body measurements.
 - History is generated at runtime relative to today (24 sessions over eight weeks, a six day streak ending yesterday), so one workout today makes a seven day streak and unlocks two achievements. Sessions done in the demo are stored and appended.
 
+### M3a Membership + mock checkout
+
+- Membership screen (`/membership`, opened from Profile): plan, status (active, expiring within 14 days, expired), days left, period progress, perks, and a plan picker (price, per month, savings against monthly). Loading skeleton, error with retry, expired and expiring notices.
+- Mock checkout (`/membership/checkout`): order summary, card or mobile wallet, field-level errors, simulated processing, receipt. The demo card is prefilled, so Renew, Pay, Done is three taps. `4000 0000 0000 0002` simulates a decline. A banner says nothing is charged.
+- Rules in `src/data/rules/membership.ts` with typed `MembershipError`: status from dates (a stored membership expires by itself), renewal continues after the current end (an expired one restarts today), month arithmetic that never spills into the next month, Luhn card check, expiry good through the last day of its month, Egyptian mobile numbers, Arabic digits accepted.
+- `membershipRepository.renew` and `onMembershipChanged` (Profile and Membership refresh after a renewal).
+- New primitive: `TextField`. New helper: `ltrIsolate` for codes inside Arabic text.
+- Session duration: gaps between actions count for at most 3 hours (`IDLE_GAP_CAP_MS`), so a forgotten session does not save as a 10 hour workout. The session clock shows the same capped time.
+- Seeded body measurements now follow today (see Decisions). `SEED_VERSION` is 4.
+
+### M3b Check-in pass, notifications, profile
+
+- Pass (`/pass`, Home quick action): QR drawn with react-native-svg from our own encoder (`src/lib/qr/encoder.ts`: byte mode, level M, versions 1 to 10, no dependency). Dark on white in every theme, never mirrored. Status is an icon plus a word. "Simulate scan" records a visit (5 minute cooldown, blocked when expired), with toast and haptic. Stats (7 days, 30 days, per week) and a visits list. Expired: QR replaced by a locked panel and a Renew button.
+- Notifications (`/notifications`, bell on Home with unread badge, row in Profile): class reminder on booking, waitlist promotion, achievements after a workout, payment after renewing, plus four seeded ones. Read, mark all read, empty and error states. Text is written at display time, so it follows the language.
+- Profile: edit name (both languages) and initials (`/edit-profile`), simulated notification toggles (persisted, they decide which notifications are created), About card, Reset demo.
+- Seeded membership now always has 38 days left, whenever the demo opens. A renewed membership has fixed dates and can lapse for real.
+- `SEED_VERSION` is 5.
+
+### M3c Polish
+
+- `?demo=empty` and `?demo=error` now reach every screen (see `docs/QUALITY.md`, which also holds the RTL audit, accessibility notes, contrast ratios and bundle sizes).
+- Fonts load per weight: 13 bundled files down to 5. Headings are real headings. Numeric fields align to the start edge in Arabic. Durations all come from tokens.
+
+## Demo switches
+
+Web: add `?demo=` with a comma list, for example `?demo=fast,expired`. Native (PowerShell): `$env:EXPO_PUBLIC_DEMO="expired"; npx expo start -c`.
+
+- `fast`: no simulated delays (also the old `EXPO_PUBLIC_DEMO_FAST=1`).
+- `expired`, `expiring`: show the seeded membership as ended or ending in 7 days. Ignored once the member has renewed.
+- `payfail`: the payment fails after processing, so the checkout failure state can be shown. Test card `4242 4242 4242 4242` pays, `4000 0000 0000 0002` is declined, both need no real data.
+- `error`: every data read fails, so each screen shows its error state (the session is spared so the app opens).
+- `empty`: hides seeded notifications and visits, so their empty states show.
+
 ## Next
 
-- M3: Membership, QR check-in pass, profile and settings (notification toggles simulated), motion and gestures polish, RTL audit, accessibility pass, performance on mid-range Android.
+- M4 Packaging: web export, APK through free EAS build (ask before creating any account), README, Portfolio Pack.
+- M3c: motion and gestures polish, RTL audit, accessibility pass, empty and error audit, performance and bundle report.
 
 ## Decisions
 
@@ -55,7 +89,13 @@ Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 - Streak means consecutive days with at least one workout. It stays alive when the last workout was yesterday, because today is not over.
 - A record is a heavier set, or the same weight for more reps. The first time an exercise is logged sets a baseline and is not a record. Volume counts external weight only, so bodyweight sets add nothing.
 - Achievements are computed from the real history. Earned ones are stored and never unlock twice; the seed stores the two already earned.
-- Body measurements are stored (seeded as eight weekly entries ending on the day of seeding), so they can be edited and deleted. Unlike workouts they do not move with today's date; Reset demo refreshes them.
+- Body measurements are stored, so they can be edited and deleted. Seeded ones carry `seedOffsetDays` and are shown relative to today (newest today, weekly spacing kept), like the generated workout history. Editing a seeded one removes the offset, so it keeps its date; entries the member adds never move.
+- Session duration counts each gap between actions as at most 3 hours. Actions that count: logging a set and the rest timer controls. Finishing counts the last gap the same way.
+- Membership status is derived from its dates on every read. Renewing an active membership starts the new period the day after the current end and applies the chosen plan; an expired one restarts today. A visitor returning more than the remaining days later sees an expired membership, which is a valid state of the demo and ends with a renewal.
+- The checkout is a full screen, not a sheet, so the keyboard never covers the fields.
+- `?demo=error` makes reads fail, so the checkout cannot even open; the checkout failure path is `?demo=payfail` and the declined test card.
+- Own QR encoder instead of a dependency: about 350 lines, verified against recorded matrices that an independent decoder (OpenCV) reads back, and against the published error correction vector. No new package, nothing that can break Expo Go or web.
+- Notification text is stored as data (kind, class name, weekday, time) and written when shown, so a language switch updates the whole inbox.
 - Vitest instead of Jest: the rules are pure TypeScript, so no React Native transform is needed. It is the only new dependency (dev only).
 
 - Accent is signal yellow on graphite, chosen to read as gym/industrial and to avoid the common neon-green look.

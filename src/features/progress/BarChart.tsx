@@ -4,7 +4,7 @@ import Svg, { Line, Rect } from 'react-native-svg';
 
 import { Text } from '@/components/ui/Text';
 import { useDirection } from '@/i18n/direction';
-import { radius, spacing, useTheme } from '@/theme';
+import { pointer, radius, spacing, useTheme } from '@/theme';
 
 import { nearestIndex, xAt } from './chartMath';
 import { Tooltip, useChartWidth } from './ChartParts';
@@ -86,7 +86,7 @@ function BarChartBase({
     >
       {width > 0 ? (
         <>
-          <Svg width={width} height={height} pointerEvents="none">
+          <Svg width={width} height={height} style={pointer.none}>
             <Line
               x1={0}
               x2={width}
@@ -117,12 +117,12 @@ function BarChartBase({
               />
             ))}
           </Svg>
-          <View pointerEvents="none" style={[styles.yLabel, { top: PAD_TOP - 8 }]}>
+          <View style={[pointer.none, styles.yLabel, { top: PAD_TOP - 8 }]}>
             <Text variant="caption" color="muted">
               {formatAxis(geometry.max)}
             </Text>
           </View>
-          <View pointerEvents="none" style={[styles.yLabel, { top: baseline - 18 }]}>
+          <View style={[pointer.none, styles.yLabel, { top: baseline - 18 }]}>
             <Text variant="caption" color="muted">
               {formatAxis(0)}
             </Text>
@@ -174,7 +174,7 @@ function BarLabel({
   const labelWidth = 72;
   const left = Math.max(0, Math.min(width - labelWidth, centre - labelWidth / 2));
   return (
-    <View pointerEvents="none" style={{ position: 'absolute', left, top, width: labelWidth }}>
+    <View style={[pointer.none, { position: 'absolute', left, top, width: labelWidth }]}>
       <Text variant="caption" color="muted" align="center" numberOfLines={1}>
         {text}
       </Text>

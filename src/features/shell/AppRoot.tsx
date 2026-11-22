@@ -1,9 +1,10 @@
-import { Changa_700Bold, Changa_800ExtraBold } from '@expo-google-fonts/changa';
-import {
-  ReadexPro_400Regular,
-  ReadexPro_500Medium,
-  ReadexPro_600SemiBold,
-} from '@expo-google-fonts/readex-pro';
+// Each weight is imported from its own file. The package index would bundle every weight of both
+// families (13 files, 1.1 MB) although the app uses five.
+import Changa_700Bold from '@expo-google-fonts/changa/700Bold/Changa_700Bold.ttf';
+import Changa_800ExtraBold from '@expo-google-fonts/changa/800ExtraBold/Changa_800ExtraBold.ttf';
+import ReadexPro_400Regular from '@expo-google-fonts/readex-pro/400Regular/ReadexPro_400Regular.ttf';
+import ReadexPro_500Medium from '@expo-google-fonts/readex-pro/500Medium/ReadexPro_500Medium.ttf';
+import ReadexPro_600SemiBold from '@expo-google-fonts/readex-pro/600SemiBold/ReadexPro_600SemiBold.ttf';
 import { LocaleProvider, Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -51,6 +52,14 @@ function AppShell() {
           >
             <Stack.Screen name="class/[sessionId]" options={{ animation: 'slide_from_bottom' }} />
             <Stack.Screen name="plan/[planId]" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="pass" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="notifications" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="edit-profile" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen name="membership/index" options={{ animation: 'slide_from_bottom' }} />
+            <Stack.Screen
+              name="membership/checkout"
+              options={{ animation: 'slide_from_bottom', gestureEnabled: false }}
+            />
             <Stack.Screen
               name="session"
               options={{ animation: 'slide_from_bottom', gestureEnabled: false }}

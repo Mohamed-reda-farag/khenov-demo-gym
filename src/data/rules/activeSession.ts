@@ -7,6 +7,26 @@ export const MAX_SETS = 10;
 export const MIN_DEFAULT_REST_SEC = 60;
 export const MAX_DEFAULT_REST_SEC = 90;
 export const REST_STEP_SEC = 15;
+/** A gap between two actions counts for at most this long (phone left in a locker, app forgotten). */
+export const IDLE_GAP_CAP_MS = 3 * 60 * 60 * 1000;
+
+function cappedGap(fromMs: number, toMs: number): number {
+  return Math.min(Math.max(0, toMs - fromMs), IDLE_GAP_CAP_MS);
+}
+
+/** Records that the member did something now and adds the gap since the last action. */
+export function markActivity(session: ActiveSession, nowMs: number): ActiveSession {
+  return {
+    ...session,
+    activeMs: session.activeMs + cappedGap(session.lastActivityMs, nowMs),
+    lastActivityMs: Math.max(session.lastActivityMs, nowMs),
+  };
+}
+
+/** Training time at `nowMs`: earlier gaps and the one still running are each capped. */
+export function activeDurationMs(session: ActiveSession, nowMs: number): number {
+  return session.activeMs + cappedGap(session.lastActivityMs, nowMs);
+}
 
 /** Planned rest times are 30 to 150 seconds; the session starts every rest at 60 to 90. */
 export function defaultRestSec(planned: number): number {
@@ -18,6 +38,8 @@ export function createActiveSession(plan: WorkoutPlan, nowMs: number, id: string
     id,
     planId: plan.id,
     startedAtMs: nowMs,
+    activeMs: 0,
+    lastActivityMs: nowMs,
     exercises: plan.exercises.map((e) => ({
       exerciseId: e.exerciseId,
       targetSets: e.sets,
@@ -59,7 +81,10 @@ export function logSet(session: ActiveSession, set: LoggedSet, nowMs: number): A
   if (!current || current.sets.length >= current.targetSets) {
     throw new WorkoutError('invalid_set_count');
   }
-  const next = updateCurrent(session, (e) => ({ ...e, sets: [...e.sets, valid] }));
+  const next = updateCurrent(markActivity(session, nowMs), (e) => ({
+    ...e,
+    sets: [...e.sets, valid],
+  }));
   return {
     ...next,
     rest: isSessionComplete(next) ? null : startTimer(nowMs, current.restSec),
@@ -94,20 +119,27 @@ export function goTo(session: ActiveSession, index: number): ActiveSession {
 }
 
 export function startRest(session: ActiveSession, seconds: number, nowMs: number): ActiveSession {
-  return { ...session, rest: startTimer(nowMs, seconds) };
+  return { ...markActivity(session, nowMs), rest: startTimer(nowMs, seconds) };
 }
 
 export function adjustRest(session: ActiveSession, deltaSec: number, nowMs: number): ActiveSession {
   if (!session.rest) return session;
-  return { ...session, rest: adjustTimer(session.rest, deltaSec * 1000, nowMs) };
+  return {
+    ...markActivity(session, nowMs),
+    rest: adjustTimer(session.rest, deltaSec * 1000, nowMs),
+  };
 }
 
 export function pauseRest(session: ActiveSession, nowMs: number): ActiveSession {
-  return session.rest ? { ...session, rest: pauseTimer(session.rest, nowMs) } : session;
+  return session.rest
+    ? { ...markActivity(session, nowMs), rest: pauseTimer(session.rest, nowMs) }
+    : session;
 }
 
 export function resumeRest(session: ActiveSession, nowMs: number): ActiveSession {
-  return session.rest ? { ...session, rest: resumeTimer(session.rest, nowMs) } : session;
+  return session.rest
+    ? { ...markActivity(session, nowMs), rest: resumeTimer(session.rest, nowMs) }
+    : session;
 }
 
 export function clearRest(session: ActiveSession): ActiveSession {
@@ -131,7 +163,7 @@ export function toWorkoutSession(session: ActiveSession, nowMs: number): Workout
     planId: session.planId,
     startedAt: new Date(session.startedAtMs).toISOString(),
     endedAt: new Date(nowMs).toISOString(),
-    durationSec: Math.max(1, Math.round((nowMs - session.startedAtMs) / 1000)),
+    durationSec: Math.max(1, Math.round(activeDurationMs(session, nowMs) / 1000)),
     exercises,
     volumeKg: exercisesVolume(exercises),
     setsCompleted,

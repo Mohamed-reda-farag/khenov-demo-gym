@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { radius, useTheme } from '@/theme';
+import { motion, radius, useTheme } from '@/theme';
 
 interface SkeletonProps {
   width?: DimensionValue;
@@ -31,7 +31,7 @@ export function Skeleton({
   useEffect(() => {
     if (reduceMotion) return;
     opacity.value = withRepeat(
-      withTiming(0.45, { duration: 800, easing: Easing.inOut(Easing.quad) }),
+      withTiming(0.45, { duration: motion.duration.pulse, easing: Easing.inOut(Easing.quad) }),
       -1,
       true,
     );

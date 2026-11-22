@@ -27,12 +27,15 @@ export function Text({
   color = 'text',
   align = 'auto',
   style,
+  accessibilityRole,
   ...rest
 }: TextProps) {
   const { colors } = useTheme();
   return (
     <RNText
       maxFontSizeMultiplier={1.3}
+      // Screen titles (h1) are headings for screen reader navigation unless a role is given.
+      accessibilityRole={accessibilityRole ?? (variant === 'h1' ? 'header' : undefined)}
       {...rest}
       style={[
         typography[variant],

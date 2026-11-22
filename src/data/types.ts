@@ -18,6 +18,8 @@ export interface Member {
   joinedAt: string;
   heightCm: number;
   membershipPlanId: string;
+  /** Overrides the initials made from the name. */
+  initials?: string;
 }
 
 export interface Trainer {
@@ -162,15 +164,43 @@ export interface Membership {
   endDate: string;
   status: 'active' | 'expired';
   memberCode: string;
+  /** Seeded membership only: dates are worked out from today at read time. A renewal removes it. */
+  followsToday?: boolean;
+}
+
+export type PaymentMethod = 'card' | 'wallet';
+
+/** What the checkout form collects. Nothing here is ever sent anywhere. */
+export type PaymentDraft =
+  | { method: 'card'; cardNumber: string; expiry: string; cvv: string }
+  | { method: 'wallet'; phone: string };
+
+export interface Receipt {
+  reference: string;
+  paidAt: string;
+  planId: string;
+  amountEgp: number;
+  method: PaymentMethod;
+  /** First day of the period that was paid for. */
+  periodStart: string;
+  periodEnd: string;
+}
+
+export interface RenewalResult {
+  membership: Membership;
+  receipt: Receipt;
 }
 
 export interface BodyEntry {
   id: string;
+  /** For entries with `seedOffsetDays` this is the day it was seeded; the shown date is computed. */
   date: string;
   weightKg: number;
   waistCm: number;
   chestCm: number;
   armCm: number;
+  /** Seeded check-ins only: how many days before today they are shown. Editing one removes it. */
+  seedOffsetDays?: number;
 }
 
 export interface SessionState {
@@ -259,6 +289,10 @@ export interface ActiveSession {
   id: string;
   planId: string;
   startedAtMs: number;
+  /** Training time so far, with every long idle gap counted as at most the idle cap. */
+  activeMs: number;
+  /** Last moment the member did something, used to measure the next gap. */
+  lastActivityMs: number;
   exercises: ActiveExercise[];
   currentIndex: number;
   rest: RestTimer | null;
@@ -266,3 +300,42 @@ export interface ActiveSession {
 
 export type BodyMeasure = 'weightKg' | 'waistCm' | 'chestCm' | 'armCm';
 export type BodyDraft = Omit<BodyEntry, 'id'>;
+
+/** A gym visit: a scanned pass in this demo, or one of the generated visits of the last weeks. */
+export interface Visit {
+  id: string;
+  at: string;
+  source: 'history' | 'scan';
+}
+
+export type NotificationKind = 'class_reminder' | 'waitlist' | 'achievement' | 'payment';
+
+/** What a notification is about. The text is written at display time, in the current language. */
+export type NotificationPayload =
+  | { kind: 'class_reminder'; className: Localized; weekday: number; time: string }
+  | { kind: 'waitlist'; className: Localized; weekday: number; time: string }
+  | { kind: 'achievement'; title: Localized }
+  | { kind: 'payment'; planName: Localized; amountEgp: number };
+
+export interface AppNotification {
+  id: string;
+  payload: NotificationPayload;
+  createdAt: string;
+  read: boolean;
+  /** Seeded notifications only: shown this many minutes before now, whenever the demo is opened. */
+  seedAgeMinutes?: number;
+}
+
+/** Simulated: they only decide which notifications reach the inbox. */
+export interface NotificationSettings {
+  classReminders: boolean;
+  waitlist: boolean;
+  achievements: boolean;
+  payments: boolean;
+}
+
+export interface ProfileDraft {
+  nameAr: string;
+  nameEn: string;
+  initials: string;
+}

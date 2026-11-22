@@ -9,7 +9,6 @@
     "skip": "Skip",
     "cancel": "Cancel",
     "retry": "Try again",
-    "comingSoon": "Coming soon",
     "demoBadge": "Demo by KHENOV",
     "demoBadgeLabel": "This app is a demo by KHENOV and all of its data is fictional",
     "close": "Close",
@@ -78,8 +77,7 @@
       "title": "Quick actions",
       "bookClass": "Book a class",
       "startWorkout": "Start a workout",
-      "checkIn": "Check-in pass",
-      "soon": "Soon"
+      "checkIn": "Check-in pass"
     }
   },
   "profile": {
@@ -99,7 +97,24 @@
     "resetConfirmTitle": "Reset the demo?",
     "resetConfirmBody": "The bookings, workouts and measurements you added will be erased and you will return to the start screen.",
     "resetConfirm": "Yes, reset",
-    "resetting": "Resetting"
+    "resetting": "Resetting",
+    "membership": "Membership",
+    "membershipOpen": "{{plan}} · {{status}}",
+    "edit": "Edit profile",
+    "notifications": "Notifications",
+    "notificationsHint": "Open your inbox",
+    "settingsTitle": "Notification settings",
+    "settingsNote": "Simulated. These choices decide which notifications reach your inbox.",
+    "classReminders": "Class reminders",
+    "waitlist": "Waitlist updates",
+    "achievements": "Achievements",
+    "payments": "Payments",
+    "on": "On",
+    "off": "Off",
+    "settingsFailed": "We couldn't save that setting. Try again.",
+    "aboutTitle": "About",
+    "aboutBody": "Nabd is a demo gym app made by KHENOV, a bilingual digital studio. Every member, trainer, class and number in it is fictional.",
+    "version": "Version {{version}}"
   },
   "error": {
     "title": "Couldn't load",
@@ -125,7 +140,13 @@
     "sessions_one": "{{countText}} session",
     "sessions_other": "{{countText}} sessions",
     "results_one": "{{countText}} result",
-    "results_other": "{{countText}} results"
+    "results_other": "{{countText}} results",
+    "days_one": "{{countText}} day",
+    "days_other": "{{countText}} days",
+    "months_one": "{{countText}} month",
+    "months_other": "{{countText}} months",
+    "visits_one": "{{countText}} visit",
+    "visits_other": "{{countText}} visits"
   },
   "classes": {
     "title": "Classes",
@@ -275,6 +296,24 @@
       "invalid_armCm": "Arm must be between 15 and 80 cm.",
       "invalid_date": "The date is not valid.",
       "not_found": "We couldn't find that measurement."
+    },
+    "membership": {
+      "plan_not_found": "We couldn't find that plan.",
+      "invalid_card_number": "Check the card number. The demo card is 4242 4242 4242 4242.",
+      "invalid_card_expiry": "Enter a valid expiry date in the future, as MM/YY.",
+      "invalid_card_cvv": "The security code has 3 digits.",
+      "invalid_wallet_phone": "Enter an Egyptian mobile number, like 01012345678.",
+      "card_declined": "This card was declined. Try the demo card or another method.",
+      "payment_failed": "The payment service is not responding. You were not charged. Try again."
+    },
+    "visit": {
+      "membership_expired": "Your membership has ended. Renew to check in.",
+      "duplicate_scan": "You already checked in a moment ago."
+    },
+    "profile": {
+      "invalid_name_ar": "Enter the Arabic name with 2 to 40 characters, without numbers or symbols.",
+      "invalid_name_en": "Enter the English name with 2 to 40 characters, without numbers or symbols.",
+      "invalid_initials": "Use one or two letters, with no numbers or spaces."
     }
   },
   "workout": {
@@ -527,5 +566,153 @@
       "locked": "Locked",
       "progress": "{{progress}} of {{target}}"
     }
+  },
+  "membership": {
+    "title": "Membership",
+    "close": "Close membership",
+    "current": "Your plan",
+    "planName": "{{name}} plan",
+    "phaseActive": "Active",
+    "phaseExpiring": "Expires soon",
+    "phaseExpired": "Expired",
+    "daysLeft": "Days left",
+    "endedOn": "Ended on {{date}}",
+    "validUntil": "Valid until {{date}}",
+    "period": "{{start}} – {{end}}",
+    "memberCode": "Member code",
+    "usedLabel": "{{percent}}% of your period used",
+    "perks": "What is included",
+    "expiredTitle": "Your membership has ended",
+    "expiredBody": "Renew to book classes and use the gym again. Your new period starts today.",
+    "expiringBody": "Renew now and the new period continues right after this one, with no gap.",
+    "renewTitle": "Renew or change plan",
+    "renewHint": "The new period starts on {{date}}.",
+    "renewHintExpired": "The new period starts today, {{date}}.",
+    "perMonth": "{{price}} / month",
+    "bestValue": "Best value",
+    "current_tag": "Current",
+    "save": "Save {{amount}}",
+    "selectPlan": "Select {{name}}",
+    "renewCta": "Renew with {{name}}",
+    "renewCtaExpired": "Renew now with {{name}}",
+    "loadFailed": "Membership could not load",
+    "toastRenewed": "Membership renewed until {{date}}"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "close": "Back to membership",
+    "mockBanner": "Demo checkout. No real payment is made. Please do not enter real card details.",
+    "summary": "Order summary",
+    "plan": "Plan",
+    "duration": "Duration",
+    "starts": "Starts",
+    "ends": "Ends",
+    "total": "Total",
+    "method": "Payment method",
+    "methodCard": "Card",
+    "methodWallet": "Mobile wallet",
+    "cardNumber": "Card number",
+    "expiry": "Expiry (MM/YY)",
+    "cvv": "Security code",
+    "phone": "Wallet mobile number",
+    "cardHint": "Demo card already filled in. 4000 0000 0000 0002 simulates a decline.",
+    "walletHint": "Any Egyptian mobile number works, like 01012345678.",
+    "useDemoCard": "Use demo card",
+    "pay": "Pay {{amount}}",
+    "paying": "Processing payment",
+    "payingA11y": "Processing your payment, please wait",
+    "successTitle": "Payment received",
+    "successBody": "Your membership is renewed. Enjoy your training.",
+    "receipt": "Receipt",
+    "reference": "Reference",
+    "paidOn": "Paid on",
+    "amount": "Amount",
+    "paidWith": "Paid with",
+    "validThrough": "Valid until",
+    "backToMembership": "Back to membership",
+    "failedTitle": "Payment did not go through"
+  },
+  "pass": {
+    "title": "Check-in pass",
+    "close": "Close check-in pass",
+    "demoNote": "Demo pass. It is not a real credential.",
+    "validFor": "Valid for {{date}}",
+    "qrLabel": "Check-in QR code for {{name}}, member code {{code}}",
+    "expiredTitle": "Pass locked",
+    "expiredBody": "Your membership has ended. Renew to get your pass back.",
+    "renew": "Renew membership",
+    "simulateTitle": "Try the check-in",
+    "simulateBody": "Demo only. Pretend you scanned your pass at the gym door.",
+    "simulate": "Simulate scan",
+    "simulating": "Scanning",
+    "scanned": "Checked in at {{time}}",
+    "duplicate": "You already checked in at {{time}}",
+    "statsTitle": "Your visits",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "perWeek": "Per week",
+    "lastVisit": "Last visit: {{when}}",
+    "noVisit": "No visits yet",
+    "recent": "Recent visits",
+    "sourceScan": "Pass scan",
+    "sourceHistory": "Gym visit",
+    "showing": "Showing the latest {{shown}} of {{total}}",
+    "emptyTitle": "No visits yet",
+    "emptyBody": "Tap \"Simulate scan\" to record your first visit."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "close": "Close notifications",
+    "markAll": "Mark all as read",
+    "markAllDone": "All notifications marked as read",
+    "new": "New",
+    "read": "Read",
+    "justNow": "Just now",
+    "emptyTitle": "You are all caught up",
+    "emptyBody": "Class reminders, waitlist news, badges and payments will show up here.",
+    "bell_zero": "Notifications, none unread",
+    "bell_one": "Notifications, 1 unread",
+    "bell_other": "Notifications, {{countText}} unread",
+    "unread_zero": "None unread",
+    "unread_one": "1 unread",
+    "unread_other": "{{countText}} unread",
+    "itemLabel": "{{title}}. {{body}}. {{when}}. {{status}}",
+    "ago": {
+      "minutes_one": "{{countText}} min ago",
+      "minutes_other": "{{countText}} min ago",
+      "hours_one": "{{countText}} hour ago",
+      "hours_other": "{{countText}} hours ago",
+      "days_one": "{{countText}} day ago",
+      "days_other": "{{countText}} days ago"
+    },
+    "kinds": {
+      "class_reminder": {
+        "title": "Class reminder",
+        "body": "{{name}} on {{day}} at {{time}}"
+      },
+      "waitlist": {
+        "title": "You got a spot",
+        "body": "{{name}} on {{day}} at {{time}}. Your booking is confirmed."
+      },
+      "achievement": {
+        "title": "Achievement unlocked",
+        "body": "{{title}}"
+      },
+      "payment": {
+        "title": "Payment received",
+        "body": "{{amount}} for the {{plan}} plan."
+      }
+    }
+  },
+  "editProfile": {
+    "title": "Edit profile",
+    "close": "Close without saving",
+    "nameAr": "Name in Arabic",
+    "nameEn": "Name in English",
+    "initials": "Initials (optional)",
+    "initialsHint": "One or two letters. Leave empty to make them from your name.",
+    "save": "Save changes",
+    "saving": "Saving",
+    "saved": "Profile updated"
   }
 }

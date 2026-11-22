@@ -20,7 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { haptics } from '@/lib/haptics';
-import { layout, motion, radius, shadow, spacing, useTheme } from '@/theme';
+import { layout, motion, pointer, radius, shadow, spacing, useTheme } from '@/theme';
 
 import { Check, Info, TriangleAlert } from './icons';
 import { Icon } from './Icon';
@@ -128,7 +128,7 @@ function ToastView({
   }));
 
   return (
-    <View pointerEvents="box-none" style={[styles.layer, { bottom }]}>
+    <View style={[pointer.boxNone, styles.layer, { bottom }]}>
       <Animated.View
         aria-live={tone === 'error' ? 'assertive' : 'polite'}
         style={[

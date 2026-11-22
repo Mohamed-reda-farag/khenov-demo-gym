@@ -4,7 +4,7 @@ import Svg, { Circle, Line, Path } from 'react-native-svg';
 
 import { Text } from '@/components/ui/Text';
 import { useDirection } from '@/i18n/direction';
-import { spacing, useTheme } from '@/theme';
+import { pointer, spacing, useTheme } from '@/theme';
 
 import { linePath, nearestIndex, niceDomain, timeFractions, xAt } from './chartMath';
 import { Tooltip, useChartWidth } from './ChartParts';
@@ -87,7 +87,7 @@ function LineChartBase({
     >
       {width > 0 ? (
         <>
-          <Svg width={width} height={height} pointerEvents="none">
+          <Svg width={width} height={height} style={pointer.none}>
             {[0, 0.5, 1].map((f) => (
               <Line
                 key={f}
@@ -138,12 +138,12 @@ function LineChartBase({
             ) : null}
           </Svg>
 
-          <View pointerEvents="none" style={[styles.yLabel, { top: PAD_TOP - 8 }]}>
+          <View style={[pointer.none, styles.yLabel, { top: PAD_TOP - 8 }]}>
             <Text variant="caption" color="muted">
               {formatAxis(maxValue)}
             </Text>
           </View>
-          <View pointerEvents="none" style={[styles.yLabel, { top: baseline - 18 }]}>
+          <View style={[pointer.none, styles.yLabel, { top: baseline - 18 }]}>
             <Text variant="caption" color="muted">
               {formatAxis(minValue)}
             </Text>
@@ -185,7 +185,7 @@ function XLabel({ x, width, text, top }: { x: number; width: number; text: strin
   const labelWidth = 72;
   const left = Math.max(0, Math.min(width - labelWidth, x - labelWidth / 2));
   return (
-    <View pointerEvents="none" style={[styles.xLabel, { left, top, width: labelWidth }]}>
+    <View style={[pointer.none, styles.xLabel, { left, top, width: labelWidth }]}>
       <Text variant="caption" color="muted" align="center" numberOfLines={1}>
         {text}
       </Text>

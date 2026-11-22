@@ -3,21 +3,26 @@ import type {
   Exercise,
   BookingState,
   ClassTemplate,
+  AppNotification,
   Member,
   Membership,
   MembershipPlan,
+  NotificationSettings,
   ScheduleEntry,
   SessionState,
   Trainer,
+  Visit,
   WorkoutPlan,
   WorkoutSession,
 } from '../types';
 
 import { evaluateAchievements } from '../rules/achievements';
+import { defaultNotificationSettings } from '../rules/notifications';
 import { buildBookingState, workoutSchedule } from './bookings';
 import { classTemplates } from './classes';
 import { exercises } from './exercises';
 import { buildMember, initialSession } from './member';
+import { buildNotifications } from './notifications';
 import { buildMembership, membershipPlans, workoutPlans } from './plans';
 import { generateSeedHistory } from './history';
 import { buildBodyEntries } from './progress';
@@ -38,6 +43,10 @@ export interface SeedData {
   /** Workouts the member did in this demo. The older history is generated at runtime. */
   userSessions: WorkoutSession[];
   unlockedAchievements: Record<string, string>;
+  /** Passes the member scanned in this demo. The generated visits of past weeks are not stored. */
+  visits: Visit[];
+  notifications: AppNotification[];
+  notificationSettings: NotificationSettings;
 }
 
 function initialUnlocks(now: Date): Record<string, string> {
@@ -47,6 +56,9 @@ function initialUnlocks(now: Date): Record<string, string> {
 
 /** All fictional. Dates are computed from `now` so the demo always feels current. */
 export function buildSeed(now: Date): SeedData {
+  const unlockedAchievements = initialUnlocks(now);
+  const membership = buildMembership(now);
+  const bookingState = buildBookingState();
   return {
     session: initialSession,
     member: buildMember(now),
@@ -55,11 +67,20 @@ export function buildSeed(now: Date): SeedData {
     exercises,
     workoutPlans,
     workoutSchedule,
-    bookingState: buildBookingState(),
+    bookingState,
     membershipPlans,
-    membership: buildMembership(now),
+    membership,
     bodyEntries: buildBodyEntries(now),
     userSessions: [],
-    unlockedAchievements: initialUnlocks(now),
+    unlockedAchievements,
+    visits: [],
+    notifications: buildNotifications(
+      now,
+      Object.keys(unlockedAchievements),
+      classTemplates.find((c) => c.id === bookingState.demoSlots[0]?.templateId),
+      membership,
+      membershipPlans,
+    ),
+    notificationSettings: defaultNotificationSettings,
   };
 }

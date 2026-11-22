@@ -1,5 +1,6 @@
 import type {
   ActiveSession,
+  AppNotification,
   AchievementStatus,
   BodyDraft,
   BodyEntry,
@@ -8,11 +9,16 @@ import type {
   Member,
   Membership,
   MembershipPlan,
+  NotificationSettings,
+  ProfileDraft,
+  PaymentDraft,
   PersonalRecord,
+  RenewalResult,
   ScheduleEntry,
   Prefs,
   SessionState,
   Trainer,
+  Visit,
   PrHit,
   WorkoutSession,
   WorkoutPlan,
@@ -26,6 +32,25 @@ export interface SessionRepository {
 
 export interface MemberRepository {
   get(): Promise<Member>;
+  /** Name in both languages and initials only. Rejects with a typed `ProfileError`. */
+  updateProfile(draft: ProfileDraft): Promise<Member>;
+}
+
+export interface VisitRepository {
+  /** Scanned passes plus the generated visits of the last weeks, newest first. */
+  list(): Promise<Visit[]>;
+  /** Simulated scan at the door. Rejects with a typed `VisitError`. */
+  recordScan(): Promise<Visit>;
+}
+
+export interface NotificationRepository {
+  /** Newest first. */
+  list(): Promise<AppNotification[]>;
+  unreadCount(): Promise<number>;
+  markRead(id: string): Promise<void>;
+  markAllRead(): Promise<void>;
+  getSettings(): Promise<NotificationSettings>;
+  setSetting(key: keyof NotificationSettings, value: boolean): Promise<NotificationSettings>;
 }
 
 export interface TrainerRepository {
@@ -65,7 +90,10 @@ export interface WorkoutPlanRepository {
 
 export interface MembershipRepository {
   listPlans(): Promise<MembershipPlan[]>;
+  /** Status (active, expired) is worked out from the dates at read time. */
   getCurrent(): Promise<Membership>;
+  /** Mock checkout. Rejects with a typed `MembershipError`; nothing is charged. */
+  renew(planId: string, payment: PaymentDraft): Promise<RenewalResult>;
 }
 
 export interface ProgressRepository {

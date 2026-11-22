@@ -50,7 +50,7 @@ export const shadow = {
 } as const;
 
 export const motion = {
-  duration: { instant: 80, fast: 150, base: 240, slow: 400 },
+  duration: { instant: 80, fast: 150, base: 240, slow: 400, pulse: 800, celebrate: 1100 },
   spring: { damping: 20, stiffness: 240, mass: 0.9 },
 } as const;
 
@@ -58,4 +58,13 @@ export const layout = {
   minTouchTarget: 44,
   screenPadding: spacing.md,
   tabBarHeight: 68,
+} as const;
+
+/** A QR code must be dark on light in every theme, or scanners cannot read it. */
+export const qr = { dark: '#0B0D10', light: '#FFFFFF' } as const;
+
+/** Touch behaviour as styles: the `pointerEvents` prop is deprecated on web. */
+export const pointer = {
+  none: { pointerEvents: 'none' },
+  boxNone: { pointerEvents: 'box-none' },
 } as const;

@@ -9,7 +9,7 @@ function daysAgo(now: Date, days: number): string {
   return new Date(now.getFullYear(), now.getMonth(), now.getDate() - days, 8, 0).toISOString();
 }
 
-/** Eight weekly check-ins ending today, oldest first. */
+/** Eight weekly check-ins ending today, oldest first. Shown dates follow today at read time. */
 export function buildBodyEntries(now: Date): BodyEntry[] {
   return weights.map((weightKg, i) => ({
     id: `body-${i + 1}`,
@@ -18,5 +18,6 @@ export function buildBodyEntries(now: Date): BodyEntry[] {
     waistCm: waists[i] ?? 0,
     chestCm: chests[i] ?? 0,
     armCm: arms[i] ?? 0,
+    seedOffsetDays: (weights.length - 1 - i) * 7,
   }));
 }

@@ -15,12 +15,15 @@ import {
   classRepository,
   memberRepository,
   onBookingsChanged,
+  onProfileChanged,
   onWorkoutChanged,
   progressRepository,
   workoutPlanRepository,
   workoutSessionRepository,
 } from '@/data/repository';
 import type { ClassSessionView, Member, WorkoutPlan } from '@/data/types';
+import { initialsOf } from '@/data/rules/profile';
+import { NotificationBell } from '@/features/notifications/NotificationBell';
 import { useBookingActions, type ActionHandlers } from '@/features/classes/useBookingActions';
 import { ResumeBanner } from '@/features/workout/ResumeBanner';
 import { useStartSession } from '@/features/workout/useStartSession';
@@ -58,19 +61,12 @@ function greetingKey(hour: number): 'morning' | 'afternoon' | 'evening' {
   return 'evening';
 }
 
-function initials(name: string): string {
-  return name
-    .split(' ')
-    .slice(0, 2)
-    .map((part) => part.charAt(0))
-    .join('');
-}
-
 export function HomeScreen() {
   const { state, reload, refresh } = useAsyncResource(loadHome);
 
   useEffect(() => onBookingsChanged(refresh), [refresh]);
   useEffect(() => onWorkoutChanged(refresh), [refresh]);
+  useEffect(() => onProfileChanged(refresh), [refresh]);
 
   return (
     <Screen scroll withTabBar>
@@ -125,9 +121,10 @@ function HomeContent({ data }: { data: HomeData }) {
             {name}
           </Text>
         </View>
+        <NotificationBell />
         <View style={[styles.avatar, { backgroundColor: colors.accent }]} aria-hidden>
           <Text variant="h2" color="onAccent">
-            {initials(name)}
+            {initialsOf(data.member, language)}
           </Text>
         </View>
       </View>
@@ -170,7 +167,11 @@ function HomeContent({ data }: { data: HomeData }) {
         onBook={goClasses}
       />
 
-      <QuickActions onBookClass={goClasses} onStartWorkout={goWorkout} />
+      <QuickActions
+        onBookClass={goClasses}
+        onStartWorkout={goWorkout}
+        onCheckIn={() => router.push('/pass')}
+      />
     </>
   );
 }
@@ -183,6 +184,7 @@ function HomeSkeleton() {
           <Skeleton width={96} height={18} />
           <Skeleton width={200} height={36} />
         </View>
+        <Skeleton width={52} height={52} rounded={radius.pill} />
         <Skeleton width={56} height={56} rounded={radius.pill} />
       </View>
       <Skeleton height={104} rounded={radius.xl} />

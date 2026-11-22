@@ -1,9 +1,10 @@
 import { delay } from '@/lib/demo/delay';
+import { hasDemoFlag } from '@/lib/demo/flags';
 import { demoStorage } from '@/lib/demo/storage';
 
 import { evaluateAchievements } from '../rules/achievements';
 import { createActiveSession, toWorkoutSession } from '../rules/activeSession';
-import { BodyError, validateBodyDraft } from '../rules/body';
+import { BodyError, resolveBodyEntries, validateBodyDraft } from '../rules/body';
 import { WorkoutError, currentStreak, detectSessionPrs, personalRecords } from '../rules/workout';
 import { generateSeedHistory } from '../seed/history';
 import type { ActiveSession, BodyEntry, WorkoutSession } from '../types';
@@ -12,12 +13,12 @@ import { emitWorkoutChanged } from './events';
 import type { ProgressRepository, WorkoutSessionRepository } from './interfaces';
 import { ACTIVE_SESSION_KEY } from './keys';
 import { readCollection, serial, writeCollection } from './local-core';
+import { notify } from './local-notifications';
 
 const QUICK = [0, 0] as const;
 
 const byEnd = (a: WorkoutSession, b: WorkoutSession) =>
   Date.parse(a.endedAt) - Date.parse(b.endedAt);
-const byDate = (a: BodyEntry, b: BodyEntry) => Date.parse(a.date) - Date.parse(b.date);
 
 /** Generated history of the last weeks plus the workouts done in this demo. */
 async function loadHistory(now: Date) {
@@ -26,14 +27,20 @@ async function loadHistory(now: Date) {
     readCollection('userSessions', QUICK),
     readCollection('unlockedAchievements', QUICK),
   ]);
-  const sessions = [...generateSeedHistory(now, plans), ...user].sort(byEnd);
-  return { plans, user, unlocked, sessions };
+  // `?demo=empty`: no generated history and no seeded badges, only what the visitor does.
+  const hideSeed = hasDemoFlag('empty');
+  const sessions = [...(hideSeed ? [] : generateSeedHistory(now, plans)), ...user].sort(byEnd);
+  return { plans, user, unlocked: hideSeed ? {} : unlocked, sessions };
 }
 
 export const localProgressRepository: ProgressRepository = {
   async listBodyEntries() {
     await delay();
-    return (await readCollection('bodyEntries', QUICK)).sort(byDate);
+    const stored = await readCollection('bodyEntries', QUICK);
+    const shown = hasDemoFlag('empty')
+      ? stored.filter((e) => e.seedOffsetDays === undefined)
+      : stored;
+    return resolveBodyEntries(shown, new Date());
   },
 
   async addBodyEntry(draft) {
@@ -118,6 +125,8 @@ async function readActive(): Promise<ActiveSession | null> {
 
 export const localWorkoutSessionRepository: WorkoutSessionRepository = {
   async getActive() {
+    // The active session lives outside the collections, so `?demo=error` has to reach it too.
+    if (hasDemoFlag('error')) throw new Error('Demo error mode');
     return readActive();
   },
 
@@ -173,10 +182,17 @@ export const localWorkoutSessionRepository: WorkoutSessionRepository = {
       await demoStorage.remove(ACTIVE_SESSION_KEY);
       emitWorkoutChanged();
 
+      const newlyUnlocked = evaluation.statuses.filter((s) =>
+        evaluation.newlyUnlocked.includes(s.id),
+      );
+      for (const status of newlyUnlocked) {
+        await notify({ kind: 'achievement', title: status.title });
+      }
+
       return {
         session: saved,
         prs,
-        newlyUnlocked: evaluation.statuses.filter((s) => evaluation.newlyUnlocked.includes(s.id)),
+        newlyUnlocked,
         streak: currentStreak([...sessions, saved], now),
       };
     });

@@ -9,7 +9,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { useTheme } from '@/theme';
+import { motion, pointer, useTheme } from '@/theme';
 
 const PARTICLES = 14;
 
@@ -20,13 +20,15 @@ export function Celebration({ active }: { active: boolean }) {
 
   useEffect(() => {
     if (!active || reduceMotion) return;
-    progress.set(withTiming(1, { duration: 1100, easing: Easing.out(Easing.cubic) }));
+    progress.set(
+      withTiming(1, { duration: motion.duration.celebrate, easing: Easing.out(Easing.cubic) }),
+    );
   }, [active, reduceMotion, progress]);
 
   if (!active || reduceMotion) return null;
 
   return (
-    <View pointerEvents="none" aria-hidden style={styles.layer}>
+    <View aria-hidden style={[pointer.none, styles.layer]}>
       {Array.from({ length: PARTICLES }, (_, i) => (
         <Particle key={i} index={i} progress={progress} />
       ))}

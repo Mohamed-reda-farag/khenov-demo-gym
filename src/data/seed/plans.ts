@@ -97,5 +97,6 @@ export function buildMembership(now: Date): Membership {
     endDate: end.toISOString(),
     status: 'active',
     memberCode: 'NBD-4827-1953',
+    followsToday: true,
   };
 }

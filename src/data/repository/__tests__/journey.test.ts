@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { logSet } from '../../rules/activeSession';
 import { logAllForTest } from '../../rules/__tests__/helpers';
 
 const store = new Map<string, string>();
@@ -352,5 +353,245 @@ describe('body measurements through the repository', () => {
     expect(await repos.progressRepository.listBodyEntries()).toEqual([]);
     const first = await repos.progressRepository.addBodyEntry(draft);
     expect(first.weightKg).toBe(79.2);
+  });
+});
+
+describe('membership through the repository', () => {
+  const quarterly = 'plan-quarterly';
+  const demoCard = {
+    method: 'card',
+    cardNumber: '4242 4242 4242 4242',
+    expiry: '12/99',
+    cvv: '123',
+  } as const;
+
+  async function renewFailure(promise: Promise<unknown>): Promise<string> {
+    try {
+      await promise;
+      return 'ok';
+    } catch (error) {
+      if (error instanceof repos.MembershipError) return error.code;
+      throw error;
+    }
+  }
+
+  it('renews, persists the new period and tells listeners', async () => {
+    const before = await repos.membershipRepository.getCurrent();
+    let heard = 0;
+    const stop = repos.onMembershipChanged(() => (heard += 1));
+    const { membership, receipt } = await repos.membershipRepository.renew(quarterly, demoCard);
+    stop();
+    expect(heard).toBe(1);
+    expect(Date.parse(membership.endDate)).toBeGreaterThan(Date.parse(before.endDate));
+    expect(receipt.amountEgp).toBe(2400);
+    expect(receipt.reference).toMatch(/^NBD-R-\d{6}$/);
+    expect(await repos.membershipRepository.getCurrent()).toEqual(membership);
+  });
+
+  it('refuses a declined card or a bad form and leaves the membership alone', async () => {
+    const before = await repos.membershipRepository.getCurrent();
+    expect(
+      await renewFailure(
+        repos.membershipRepository.renew(quarterly, {
+          ...demoCard,
+          cardNumber: '4000 0000 0000 0002',
+        }),
+      ),
+    ).toBe('card_declined');
+    expect(
+      await renewFailure(repos.membershipRepository.renew(quarterly, { ...demoCard, cvv: '1' })),
+    ).toBe('invalid_card_cvv');
+    expect(await renewFailure(repos.membershipRepository.renew('plan-gold', demoCard))).toBe(
+      'plan_not_found',
+    );
+    expect(await repos.membershipRepository.getCurrent()).toEqual(before);
+  });
+
+  it('the seeded membership is always active, whenever the demo is opened', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.now() + 400 * 86_400_000);
+    const later = await repos.membershipRepository.getCurrent();
+    expect(later.status).toBe('active');
+    expect(Date.parse(later.endDate)).toBeGreaterThan(Date.now());
+  });
+
+  it('a membership the member renewed has fixed dates and can lapse for real', async () => {
+    const { membership } = await repos.membershipRepository.renew('plan-monthly', demoCard);
+    expect(membership.followsToday).toBeUndefined();
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.parse(membership.endDate) + 3 * 86_400_000);
+    const lapsed = await repos.membershipRepository.getCurrent();
+    expect(lapsed.status).toBe('expired');
+    const again = await repos.membershipRepository.renew('plan-monthly', demoCard);
+    expect(new Date(again.membership.startDate).toDateString()).toBe(new Date().toDateString());
+    expect((await repos.membershipRepository.getCurrent()).status).toBe('active');
+  });
+});
+
+describe('seeded measurements and workout time through the repositories', () => {
+  it('the newest seeded measurement is still today 40 days after seeding', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.now() + 40 * 86_400_000);
+    const entries = await repos.progressRepository.listBodyEntries();
+    expect(entries).toHaveLength(8);
+    expect(new Date(entries[7]!.date).toDateString()).toBe(new Date().toDateString());
+  });
+
+  it('a measurement the member edits stops following today', async () => {
+    const [first] = await repos.progressRepository.listBodyEntries();
+    const { entry } = await repos.progressRepository.updateBodyEntry(first!.id, {
+      date: first!.date,
+      weightKg: 90,
+      waistCm: first!.waistCm,
+      chestCm: first!.chestCm,
+      armCm: first!.armCm,
+    });
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.now() + 30 * 86_400_000);
+    const after = await repos.progressRepository.listBodyEntries();
+    expect(after.find((e) => e.id === entry.id)?.date).toBe(entry.date);
+  });
+
+  it('a workout forgotten for ten hours is saved as at most three hours', async () => {
+    const [plan] = await repos.workoutPlanRepository.list();
+    const started = await repos.workoutSessionRepository.start(plan!.id);
+    const logged = logSet(started, { weightKg: 60, reps: 8 }, started.startedAtMs + 2 * 60_000);
+    await repos.workoutSessionRepository.saveActive(logged);
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(started.startedAtMs + 10 * 3_600_000);
+    const { session } = await repos.workoutSessionRepository.finish(logged);
+    expect(session.durationSec).toBe(2 * 60 + 3 * 3600);
+  });
+});
+
+describe('check-in, notifications and profile through the repositories', () => {
+  async function inbox() {
+    return repos.notificationRepository.list();
+  }
+
+  it('records a scan, shows it newest first, and refuses an immediate second scan', async () => {
+    const before = await repos.visitRepository.list();
+    expect(before.length).toBeGreaterThanOrEqual(20);
+    expect(before.every((v) => v.source === 'history')).toBe(true);
+    const scan = await repos.visitRepository.recordScan();
+    const after = await repos.visitRepository.list();
+    expect(after).toHaveLength(before.length + 1);
+    expect(after[0]).toEqual(scan);
+    try {
+      await repos.visitRepository.recordScan();
+      expect.unreachable();
+    } catch (error) {
+      expect((error as InstanceType<typeof repos.VisitError>).code).toBe('duplicate_scan');
+    }
+  });
+
+  it('refuses a scan once the renewed membership has lapsed', async () => {
+    const { membership } = await repos.membershipRepository.renew('plan-monthly', {
+      method: 'wallet',
+      phone: '01012345678',
+    });
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(Date.parse(membership.endDate) + 3 * 86_400_000);
+    try {
+      await repos.visitRepository.recordScan();
+      expect.unreachable();
+    } catch (error) {
+      expect((error as InstanceType<typeof repos.VisitError>).code).toBe('membership_expired');
+    }
+  });
+
+  it('starts with a seeded inbox and keeps read state', async () => {
+    const items = await inbox();
+    expect(items).toHaveLength(4);
+    expect(await repos.notificationRepository.unreadCount()).toBe(2);
+    await repos.notificationRepository.markRead(items.find((n) => !n.read)!.id);
+    expect(await repos.notificationRepository.unreadCount()).toBe(1);
+    await repos.notificationRepository.markAllRead();
+    expect(await repos.notificationRepository.unreadCount()).toBe(0);
+  });
+
+  it('adds a notification for a real booking and for a payment, and tells listeners', async () => {
+    await repos.notificationRepository.markAllRead();
+    let heard = 0;
+    const stop = repos.onNotificationsChanged(() => (heard += 1));
+    const [target] = (await freeSessions()).filter(
+      (s) => Date.parse(s.startAt) - Date.now() > 3_600_000,
+    );
+    await repos.bookingRepository.book(target!.id);
+    await repos.membershipRepository.renew('plan-annual', {
+      method: 'wallet',
+      phone: '01012345678',
+    });
+    stop();
+    expect(heard).toBe(2);
+    const items = await inbox();
+    expect(items).toHaveLength(6);
+    expect(
+      items
+        .filter((n) => !n.read)
+        .map((n) => n.payload.kind)
+        .sort(),
+    ).toEqual(['class_reminder', 'payment']);
+  });
+
+  it('sends nothing for a kind that is switched off', async () => {
+    await repos.notificationRepository.setSetting('payments', false);
+    expect((await repos.notificationRepository.getSettings()).payments).toBe(false);
+    await repos.membershipRepository.renew('plan-annual', {
+      method: 'wallet',
+      phone: '01012345678',
+    });
+    expect(await inbox()).toHaveLength(4);
+    await repos.notificationRepository.setSetting('payments', true);
+  });
+
+  it('does not notify for a payment that was declined', async () => {
+    try {
+      await repos.membershipRepository.renew('plan-annual', {
+        method: 'card',
+        cardNumber: '4000 0000 0000 0002',
+        expiry: '12/99',
+        cvv: '123',
+      });
+    } catch {
+      // expected
+    }
+    expect(await inbox()).toHaveLength(4);
+  });
+
+  it('notifies about badges earned by a finished workout', async () => {
+    const [plan] = await repos.workoutPlanRepository.list();
+    const started = await repos.workoutSessionRepository.start(plan!.id);
+    const done = logAllForTest(started);
+    await repos.workoutSessionRepository.saveActive(done);
+    const { newlyUnlocked } = await repos.workoutSessionRepository.finish(done);
+    const badges = (await inbox()).filter((n) => n.payload.kind === 'achievement');
+    expect(badges).toHaveLength(2 + newlyUnlocked.length);
+  });
+
+  it('edits the name and initials, tells listeners, and refuses bad input', async () => {
+    let heard = 0;
+    const stop = repos.onProfileChanged(() => (heard += 1));
+    const member = await repos.memberRepository.updateProfile({
+      nameAr: 'نور أحمد',
+      nameEn: 'Nour Ahmed',
+      initials: 'NA',
+    });
+    stop();
+    expect(heard).toBe(1);
+    expect(member).toMatchObject({ name: { en: 'Nour Ahmed' }, initials: 'NA', id: 'member-demo' });
+    expect((await repos.memberRepository.get()).initials).toBe('NA');
+    const cleared = await repos.memberRepository.updateProfile({
+      nameAr: 'نور أحمد',
+      nameEn: 'Nour Ahmed',
+      initials: '',
+    });
+    expect(cleared.initials).toBeUndefined();
+    try {
+      await repos.memberRepository.updateProfile({ nameAr: 'نور', nameEn: 'N', initials: '' });
+      expect.unreachable();
+    } catch (error) {
+      expect((error as InstanceType<typeof repos.ProfileError>).code).toBe('invalid_name_en');
+    }
   });
 });

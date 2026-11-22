@@ -1,4 +1,4 @@
-import type { BodyDraft, BodyMeasure } from '../types';
+import type { BodyDraft, BodyEntry, BodyMeasure } from '../types';
 
 export type BodyErrorCode =
   | 'invalid_weightKg'
@@ -41,4 +41,24 @@ export function validateBodyDraft(draft: BodyDraft, now: Date): BodyDraft {
     result[key] = round1(value);
   }
   return result;
+}
+
+/** Seeded check-ins sit at 08:00 on the day they are shown. */
+function seededDate(now: Date, daysAgo: number): string {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() - daysAgo, 8, 0).toISOString();
+}
+
+/**
+ * Seeded check-ins follow today, like the generated workout history: the newest one is always
+ * today and the older ones keep their weekly spacing. Entries the member added or edited carry
+ * no offset, so they keep the date they were saved with. Oldest first.
+ */
+export function resolveBodyEntries(entries: BodyEntry[], now: Date): BodyEntry[] {
+  return entries
+    .map((entry) =>
+      entry.seedOffsetDays === undefined
+        ? entry
+        : { ...entry, date: seededDate(now, entry.seedOffsetDays) },
+    )
+    .sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 }

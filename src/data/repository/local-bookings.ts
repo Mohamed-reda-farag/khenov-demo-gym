@@ -1,5 +1,6 @@
 import { delay } from '@/lib/demo/delay';
 import { FAST_MODE } from '@/lib/demo/fast-mode';
+import { hasDemoFlag } from '@/lib/demo/flags';
 
 import {
   applyBook,
@@ -14,10 +15,12 @@ import {
   toSessionView,
   type RuleContext,
 } from '../rules/booking';
+import { whenOf } from '../rules/notifications';
 import { generateSessionTimings, resolveSession } from '../rules/sessions';
 import type { BookingState, ClassSessionView, ClassTemplate, Trainer } from '../types';
 
 import { emitBookingsChanged } from './events';
+import { notify } from './local-notifications';
 import type { BookingRepository, ClassRepository } from './interfaces';
 import { readCollection, serial, writeCollection } from './local-core';
 
@@ -57,6 +60,7 @@ function viewOf(loaded: Loaded, state: BookingState, sessionId: string): ClassSe
 async function mutate(
   sessionId: string,
   rule: (state: BookingState, ctx: RuleContext) => BookingState,
+  after?: (view: ClassSessionView) => Promise<void>,
 ): Promise<ClassSessionView> {
   await delay(250, 650);
   return serial(async () => {
@@ -64,7 +68,9 @@ async function mutate(
     const next = rule(loaded.state, context(loaded));
     await writeCollection('bookingState', next, QUICK);
     emitBookingsChanged();
-    return viewOf(loaded, next, sessionId);
+    const view = viewOf(loaded, next, sessionId);
+    await after?.(view);
+    return view;
   });
 }
 
@@ -72,6 +78,8 @@ export const localClassRepository: ClassRepository = {
   async listSessions() {
     await delay();
     const loaded = await load();
+    // `?demo=empty`: a gym with no classes scheduled, so the empty day state shows.
+    if (hasDemoFlag('empty')) return [];
     return generateSessionTimings(loaded.templates, loaded.now).map((timing) =>
       viewOf(loaded, loaded.state, timing.id),
     );
@@ -86,6 +94,7 @@ export const localClassRepository: ClassRepository = {
   async listUpcomingBooked() {
     await delay();
     const loaded = await load();
+    if (hasDemoFlag('empty')) return [];
     const nowMs = loaded.now.getTime();
     return loaded.state.bookings
       .filter((b) => b.status === 'booked' && Date.parse(b.startAt) > nowMs)
@@ -95,7 +104,16 @@ export const localClassRepository: ClassRepository = {
 };
 
 export const localBookingRepository: BookingRepository = {
-  book: (id) => mutate(id, (state, ctx) => applyBook(state, id, ctx)),
+  book: (id) =>
+    mutate(
+      id,
+      (state, ctx) => applyBook(state, id, ctx),
+      async (view) => {
+        if (view.slot === 'booked') {
+          await notify({ kind: 'class_reminder', className: view.name, ...whenOf(view.startAt) });
+        }
+      },
+    ),
   cancel: (id) => mutate(id, (state, ctx) => applyCancel(state, id, ctx)),
   joinWaitlist: (id) => mutate(id, (state, ctx) => applyJoinWaitlist(state, id, ctx)),
   leaveWaitlist: (id) => mutate(id, (state) => applyLeaveWaitlist(state, id)),
@@ -109,7 +127,11 @@ export const localBookingRepository: BookingRepository = {
       if (promoted.length === 0) return [];
       await writeCollection('bookingState', state, QUICK);
       emitBookingsChanged();
-      return promoted.map((id) => viewOf(loaded, state, id));
+      const views = promoted.map((id) => viewOf(loaded, state, id));
+      for (const view of views) {
+        await notify({ kind: 'waitlist', className: view.name, ...whenOf(view.startAt) });
+      }
+      return views;
     });
   },
 };
