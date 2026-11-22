@@ -2,7 +2,7 @@
 
 Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 
-**Status:** M0 to M3 done, M4a (web hosting, README, repo hygiene) done. Next: M4b (Android APK, Portfolio Pack). Version 1.0.0. How to run, switches and deploy steps are in `README.md`.
+**Status:** M0 to M4 done (M4b: APK instructions and Portfolio Pack). Waiting for: hosting account and deploy of the three demos, EAS account and the APK build, then the v1.0.0 tag. Version 1.0.0. How to run, switches and deploy steps are in `README.md`.
 
 ## Done
 
@@ -74,6 +74,12 @@ Fictional gym "Nabd / نبض". Demo by KHENOV. Contract: `docs/CONTRACT.md`.
 - `npm audit`: 3 moderate findings, one chain (`minimatch` via `@expo/fingerprint`, Expo build tooling, not shipped). The offered fix downgrades Expo, so it is not applied.
 - Hosting decision: Cloudflare Pages (free plan, root deployment, automatic single page fallback, header file). No account has been created yet.
 
+### M4b Android APK and Portfolio Pack
+
+- `eas.json`: `preview` profile, internal distribution, APK. Steps, free plan limits (15 Android builds a month, low-priority queue, no payment method) and the fallbacks are in `docs/ANDROID_BUILD.md`. Checked: `expo prebuild -p android` runs cleanly (package `com.khenov.demo.gym`, version 1.0.0). Not done: no Expo account, no build.
+- `docs/portfolio/`: cover spec, 6 screenshots, 30 second video script, summary AR/EN, `card.json`, `media/` for the final files. The ffmpeg commands were run on test files (cover 1600 x 1000 WebP, 720 x 1600 H.264 video without audio).
+- Decisions: no hosting account yet (the three demos are deployed together later), no v1.0.0 tag until after M4b, no KHENOV logo in the README, no LICENSE file.
+
 ## Demo switches
 
 Web: add `?demo=` with a comma list, for example `?demo=fast,expired`. Native (PowerShell): `$env:EXPO_PUBLIC_DEMO="expired"; npx expo start -c`.
@@ -86,7 +92,7 @@ Web: add `?demo=` with a comma list, for example `?demo=fast,expired`. Native (P
 
 ## Next
 
-- M4b: Android APK through a free EAS build (ask before creating any account), Portfolio Pack in `docs/portfolio/`.
+- Deploy the web demo (Cloudflare Pages) and build the APK (EAS) when the accounts are approved, produce the media in `docs/portfolio/media/`, fill the two links in `docs/portfolio/card.json`, then tag `v1.0.0`.
 
 ## Decisions
 

@@ -3,7 +3,7 @@
 Nabd Gym is a **demo** mobile app for a fictional gym, made by KHENOV as a portfolio piece. It shows a complete member journey in Arabic (default, right to left) and English. **Everything in it is fictional.** The member, trainers, classes, prices and numbers are invented, nothing is sent anywhere, there is no backend, no real login and no real payment.
 
 - Live demo: _add the URL after the first deploy_ (see [Deploy the web demo](#deploy-the-web-demo))
-- Android APK: _add the link after the build_ (planned for the next batch)
+- Android APK: _add the link after the build_ (steps in [docs/ANDROID_BUILD.md](docs/ANDROID_BUILD.md))
 
 ## The journey
 
@@ -48,6 +48,14 @@ Other hosts work too. Netlify needs a file `public/_redirects` with `/* /index.h
 The build keeps the demo out of search results: `<meta name="robots">`, `robots.txt` and an `X-Robots-Tag` header. Remove them in `public/` when you want it indexed.
 
 `npm run build:web` also moves Expo's `assets/node_modules` folder to `assets/vendor`, because some hosts and upload tools silently skip folders named `node_modules`, which would remove the fonts.
+
+## Android APK
+
+An installable Android build is made with the free EAS Build plan and the `preview` profile in `eas.json`. It needs a free Expo account and no payment method; the steps, the free plan limits and the fallbacks are in [docs/ANDROID_BUILD.md](docs/ANDROID_BUILD.md).
+
+## Portfolio pack
+
+Cover, screenshot list, a 30 second video script, the project summary in Arabic and English and the portfolio card are in [docs/portfolio](docs/portfolio/README.md). Everything there labels the project as a **Demo** with fictional data.
 
 ## Demo switches
 
