@@ -39,6 +39,16 @@
         }
       ]
     ],
-    "description": "Nabd Gym is a demo gym member app by KHENOV. All data is fictional. · تطبيق تجريبي لصالة رياضية من KHENOV، وكل بياناته وهمية."
+    "description": "Nabd Gym is a demo gym member app by KHENOV. All data is fictional. · تطبيق تجريبي لصالة رياضية من KHENOV، وكل بياناته وهمية.",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "bd9f596d-9c10-43b3-a0ef-5c01adb61907"
+      }
+    }
   }
 }
